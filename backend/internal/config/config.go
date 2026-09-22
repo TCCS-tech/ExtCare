@@ -56,7 +56,7 @@ func loadFile(path string) {
 func FromEnv() (Config, error) {
 	cfg := Config{
 		DatabaseURL:  os.Getenv("DATABASE_URL"),
-		HTTPAddr:     envOr("HTTP_ADDR", ":8088"),
+		HTTPAddr:     envOr("HTTP_ADDR", "0.0.0.0:8088"),
 		Timezone:     envOr("APP_TIMEZONE", "America/Chicago"),
 		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
 		SeedEmail:    strings.ToLower(strings.TrimSpace(os.Getenv("SEED_ADMIN_EMAIL"))),
