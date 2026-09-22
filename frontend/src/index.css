@@ -1,0 +1,173 @@
+/* Aftercare check-in. Parents at pickup, staff at the desk.
+   Utilitarian kiosk on Bootstrap. */
+:root {
+  --bs-primary: #1f4e3d;
+  --bs-primary-rgb: 31, 78, 61;
+  --bs-link-color: #184233;
+  --bs-link-hover-color: #102e24;
+  --bs-body-bg: #f4f0e6;
+  --bs-body-color: #221e19;
+  --bs-heading-color: #221e19;
+  --bs-border-color: #ddd4c4;
+  --bs-secondary-bg: #fffdf8;
+  --bs-tertiary-bg: #efeae0;
+  --bs-font-sans-serif: "Avenir Next", "Segoe UI", sans-serif;
+  --bs-border-radius: 0.4rem;
+  --ink: #3d3428;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--bs-font-sans-serif);
+}
+
+h1,
+h2,
+.h1,
+.h2 {
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+.kiosk {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1rem 1.5rem;
+}
+
+.kiosk-bar,
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.wordmark {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.kiosk-main {
+  width: min(100%, 28rem);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.kiosk-main h1 {
+  font-size: clamp(2rem, 7vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.kiosk-main p {
+  margin: 0 0 0.5rem;
+  color: #4d463d;
+}
+
+.btn-kiosk {
+  min-height: 4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #1f4e3d;
+  --bs-btn-border-color: #1f4e3d;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #183f32;
+  --bs-btn-hover-border-color: #183f32;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #123228;
+  --bs-btn-active-border-color: #123228;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #8aa396;
+  --bs-btn-disabled-border-color: #8aa396;
+}
+
+.btn-ink {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--ink);
+  --bs-btn-border-color: var(--ink);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #2c261e;
+  --bs-btn-hover-border-color: #2c261e;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #221c16;
+  --bs-btn-active-border-color: #221c16;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #9a9186;
+  --bs-btn-disabled-border-color: #9a9186;
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-check-input:focus-visible,
+a:focus-visible {
+  outline: 3px solid #1f4e3d;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.kiosk-foot {
+  text-align: center;
+}
+
+.kiosk-foot a {
+  color: #4d463d;
+}
+
+.scan-shell {
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding: 1rem 1rem 2.5rem;
+}
+
+#qr-reader {
+  width: min(100%, 26rem);
+  margin: 0 auto 1rem;
+  border: 1px solid var(--bs-border-color);
+  background: #fffdf8;
+}
+
+.panel {
+  background: #fffdf8;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: 1rem;
+}
+
+.student-removed td {
+  color: #6d675e;
+}
+
+.modal-backdrop {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

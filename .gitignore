@@ -1,0 +1,6 @@
+.env
+frontend/node_modules
+frontend/dist
+backend/tmp
+*.exe
+.DS_Store
