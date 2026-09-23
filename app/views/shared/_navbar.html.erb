@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+  <div class="container">
+    <%= link_to "AfterCare", root_path, class: "navbar-brand fw-semibold" %>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#primary-nav" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="primary-nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><%= link_to "Check in", checkins_path, class: nav_link_class("checkins") %></li>
+        <li class="nav-item"><%= link_to "Check out", checkouts_path, class: nav_link_class("checkouts") %></li>
+        <% if Current.user.admin? %>
+          <li class="nav-item"><%= link_to "Admin", admin_root_path, class: nav_link_class("dashboard") %></li>
+        <% end %>
+      </ul>
+      <div class="d-flex align-items-lg-center flex-column flex-lg-row gap-2 py-2 py-lg-0">
+        <span class="navbar-text"><%= Current.user.email %></span>
+        <%= button_to "Log out", session_path, method: :delete, class: "btn btn-outline-light btn-sm" %>
+      </div>
+    </div>
+  </div>
+</nav>

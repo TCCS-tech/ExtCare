@@ -1,0 +1,7 @@
+en:
+  time:
+    formats:
+      check: "%-l:%M %p"
+  date:
+    formats:
+      long_day: "%A, %B %-d, %Y"

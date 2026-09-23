@@ -1,0 +1,10 @@
+<%= turbo_stream.replace dom_id(@student, :checkin) do %>
+  <%= render "student",
+        student: @student,
+        visits: @visits,
+        open_visit: @open_visit,
+        here_yesterday: @here_yesterday,
+        day: @day,
+        grade: @grade,
+        query: @q %>
+<% end %>

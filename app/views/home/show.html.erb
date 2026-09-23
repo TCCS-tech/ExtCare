@@ -1,0 +1,42 @@
+<% content_for :title, "AfterCare" %>
+
+<div class="text-center py-3">
+  <h1 class="display-6 fw-semibold">AfterCare</h1>
+  <p class="lead mb-1">Check students in and out.</p>
+  <p class="text-body-secondary mb-0"><%= l(Date.current, format: :long_day) %></p>
+</div>
+
+<div class="row g-3 justify-content-center mt-2">
+  <div class="col-12 col-md-6 col-xl-4">
+    <%= link_to checkins_path, class: "card h-100 text-decoration-none shadow-sm" do %>
+      <div class="card-body p-4">
+        <h2 class="h3 text-body">Check in</h2>
+        <p class="mb-0 text-body-secondary">Find a student and mark them here.</p>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4">
+    <%= link_to checkouts_path, class: "card h-100 text-decoration-none shadow-sm" do %>
+      <div class="card-body p-4">
+        <h2 class="h3 text-body">Check out</h2>
+        <p class="mb-0 text-body-secondary">
+          <% if @open_count.positive? %>
+            <%= pluralize(@open_count, "student") %> still here.
+          <% else %>
+            Everyone is checked out.
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+  <% if Current.user.admin? %>
+    <div class="col-12 col-md-6 col-xl-4">
+      <%= link_to admin_root_path, class: "card h-100 text-decoration-none shadow-sm" do %>
+        <div class="card-body p-4">
+          <h2 class="h3 text-body">Admin</h2>
+          <p class="mb-0 text-body-secondary">Students and the day's check-ins.</p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@visit, :checkout) do %>
+  <%= render "visit", visit: @visit, day: @visit.day, grade: params[:grade].presence, query: params[:q].to_s %>
+<% end %>

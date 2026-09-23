@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tccs_aftercare_development
+      TZ: America/Los_Angeles
+      PGTZ: America/Los_Angeles
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    command: ["postgres", "-c", "timezone=America/Los_Angeles"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tccs_aftercare_development"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  pgdata:

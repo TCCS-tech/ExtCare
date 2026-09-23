@@ -1,0 +1,19 @@
+<% content_for :title, "Reset password" %>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-5 col-lg-4">
+    <div class="card shadow-sm mt-3">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-3">Forgot your password?</h1>
+        <%= form_with url: passwords_path do |form| %>
+          <div class="mb-3">
+            <%= form.label :email, "Email", class: "form-label" %>
+            <%= form.email_field :email, required: true, autofocus: true, autocomplete: "username", class: "form-control form-control-lg", value: params[:email] %>
+          </div>
+          <%= form.submit "Email reset instructions", class: "btn btn-primary w-100" %>
+        <% end %>
+        <p class="mt-3 mb-0"><%= link_to "Back to sign in", new_session_path %></p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<%# locals: (visit:, day:, grade:, query:) %>
+<%= tag.div id: dom_id(visit, :checkout), class: "list-group-item px-3 py-3" do %>
+  <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+    <div>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="student-name fs-5 fw-semibold"><%= visit.student.full_name %></span>
+        <span class="badge text-bg-light">Grade <%= visit.student.grade %></span>
+        <% if visit.student.hidden? %>
+          <span class="badge text-bg-secondary">Removed</span>
+        <% end %>
+      </div>
+      <div class="small text-body-secondary mt-1">In at <%= clock(visit.checkin) %></div>
+    </div>
+    <div class="d-grid d-sm-block">
+      <% if visit.checkout %>
+        <span class="fs-4 fw-semibold text-nowrap"><%= clock(visit.checkout) %></span>
+      <% else %>
+        <%= button_to "Check out", checkouts_path,
+              params: { attendance_id: visit.id, day: day, grade: grade, q: query },
+              class: "btn btn-success btn-lg",
+              form: { class: "m-0" } %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

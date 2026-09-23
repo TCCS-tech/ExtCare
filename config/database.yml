@@ -1,0 +1,24 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password: postgres
+  host: localhost
+  port: 5432
+  variables:
+    timezone: America/Los_Angeles
+
+development:
+  <<: *default
+  database: tccs_aftercare_development
+
+test:
+  <<: *default
+  database: tccs_aftercare_test
+
+production:
+  <<: *default
+  database: tccs_aftercare_production
+  username: tccs_aftercare
+  password: <%= ENV["TCCS_AFTERCARE_DATABASE_PASSWORD"] %>

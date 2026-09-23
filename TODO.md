@@ -3,7 +3,7 @@
 ## Tech Stack
 * Rails 8.1.3.1, Propshaft, importmaps, Hotwire on, no build step
 * Bootstrap CSS for UI
-* Postgres for DB
+* Postgres for DB (using Docker)
 * Mise for tools (ruby, etc)
 * Justfile instead of Makefile
 

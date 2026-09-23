@@ -1,0 +1,31 @@
+<%# locals: (route:, day:, grade:, query:, autofocus: false) %>
+<div class="day-toolbar mb-3">
+  <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+    <%= link_to public_send(route, day: day - 1, grade: grade.presence, q: query.presence), class: "btn btn-outline-secondary btn-lg px-3", aria: { label: "Previous day" } do %>
+      <span aria-hidden="true">&lsaquo;</span>
+    <% end %>
+    <div class="text-center">
+      <div class="fs-5 fw-semibold"><%= l(day, format: :long_day) %></div>
+      <% unless day == Date.current %>
+        <%= link_to "Back to today", public_send(route, grade: grade.presence, q: query.presence), class: "small" %>
+      <% end %>
+    </div>
+    <%= link_to public_send(route, day: day + 1, grade: grade.presence, q: query.presence), class: "btn btn-outline-secondary btn-lg px-3", aria: { label: "Next day" } do %>
+      <span aria-hidden="true">&rsaquo;</span>
+    <% end %>
+  </div>
+
+  <%= form_with url: public_send(route), method: :get, data: { controller: "roster-filter", turbo_action: "advance" } do %>
+    <%= hidden_field_tag :day, day %>
+    <%= hidden_field_tag :grade, grade, data: { roster_filter_target: "grade" } %>
+    <label class="visually-hidden" for="<%= route %>_query">Find a student</label>
+    <%= text_field_tag :q, query, id: "#{route}_query", class: "form-control form-control-lg mb-3", placeholder: "Type a name", autocomplete: "off", enterkeyhint: "search", data: { roster_filter_target: "query", action: "input->roster-filter#submit", autofocus: (autofocus ? "true" : nil) } %>
+    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Grade">
+      <%= button_tag "All", type: "button", class: "btn #{grade.blank? ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: "all" } %>
+      <% (1..6).each do |number| %>
+        <% active = grade.to_s == number.to_s %>
+        <%= button_tag number, type: "button", class: "btn #{active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: number } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

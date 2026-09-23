@@ -1,0 +1,43 @@
+<%# locals: (student:, visits:, open_visit:, here_yesterday:, day:, grade:, query:) %>
+<% completed = visits.select { |visit| visit.checkout.present? } %>
+<% open_today = open_visit if open_visit&.day == day %>
+
+<%= tag.div id: dom_id(student, :checkin), class: "list-group-item px-3 py-3" do %>
+  <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+    <div>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="student-name fs-5 fw-semibold"><%= student.full_name %></span>
+        <span class="badge text-bg-light">Grade <%= student.grade %></span>
+        <% if here_yesterday %>
+          <span class="badge text-bg-info">Here yesterday</span>
+        <% end %>
+      </div>
+
+      <% if completed.any? %>
+        <ul class="list-unstyled small text-body-secondary mb-0 mt-1">
+          <% completed.each do |visit| %>
+            <li><%= clock(visit.checkin) %> – <%= clock(visit.checkout) %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <% if open_visit && open_visit.day != day %>
+        <div class="small mt-1">
+          Still checked in from <%= l(open_visit.day, format: :long_day) %>.
+          <%= link_to "Check out", checkouts_path(day: open_visit.day) %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="d-grid d-sm-block">
+      <% if open_today %>
+        <span class="fs-4 fw-semibold text-nowrap"><%= clock(open_today.checkin) %></span>
+      <% elsif open_visit.nil? %>
+        <%= button_to "Check in", checkins_path,
+              params: { student_id: student.id, day: day, grade: grade, q: query },
+              class: "btn btn-primary btn-lg",
+              form: { class: "m-0" } %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
