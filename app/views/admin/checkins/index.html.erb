@@ -1,0 +1,5 @@
+<% content_for :title, "Check-ins" %>
+<%= render "shared/page_heading", title: "Check-ins", description: "Review check-ins and check-outs for a school day.", eyebrow: "SCHOOL OFFICE" %>
+<p class="mb-3"><%= link_to "Students", admin_students_path(admin_filter_params) %> · <%= link_to "Admin home", admin_root_path %></p>
+
+<%= render "admin/dashboard/checkins" %>

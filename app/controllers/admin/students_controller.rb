@@ -1,8 +1,12 @@
 class Admin::StudentsController < Admin::BaseController
+  def index
+    load_dashboard
+  end
+
   def create
     @student = Student.new(student_params)
     if @student.save
-      redirect_to admin_root_path(filter_params), notice: "#{@student.full_name} added."
+      redirect_to admin_students_path(filter_params), notice: "#{@student.full_name} added."
     else
       render :new, status: :unprocessable_entity
     end
@@ -28,9 +32,9 @@ class Admin::StudentsController < Admin::BaseController
         @student.restore!
         notice = "#{@student.full_name} restored."
       end
-      redirect_to admin_root_path(filter_params), notice: notice
+      redirect_to admin_students_path(filter_params), notice: notice
     elsif @student.update(attributes)
-      redirect_to admin_root_path(filter_params), notice: "#{@student.full_name} updated."
+      redirect_to admin_students_path(filter_params), notice: "#{@student.full_name} updated."
     else
       render :edit, status: :unprocessable_entity
     end
