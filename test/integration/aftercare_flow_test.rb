@@ -37,13 +37,15 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
 
       get checkins_path(day: "2026-09-22")
       assert_select "#checkin_student_#{@mia.id}", text: /3:30 PM/
-      assert_select "#checkin_student_#{@mia.id} button", text: "Check in"
+      assert_select "#checkin-ready #checkin_student_#{@mia.id} button", text: "Check in"
 
       post checkins_path, params: { student_id: @mia.id, day: "2026-09-22" }, as: :turbo_stream
       assert_response :success
       assert_includes response.body, "3:30 PM"
       get checkins_path(day: "2026-09-22")
       assert_select "#checkin_student_#{@mia.id} button", count: 0
+      assert_select "#checkin-completed #checkin_student_#{@mia.id}"
+      assert_select "#checkin-ready #checkin_student_#{@noah.id}"
     end
   end
 
@@ -73,7 +75,7 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select ".student-name", text: "Nora Vance", count: 0
   end
 
-  test "checkout lists only open visits and turns the button into a time" do
+  test "checkout separates open and completed visits and keeps completion after refresh" do
     sign_in_as @staff
     travel_to Time.zone.local(2026, 9, 22, 16, 5, 0) do
       Attendance.check_in(student: @mia, by: @staff, day: Date.new(2026, 9, 22))
@@ -88,7 +90,9 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
       assert_not_includes response.body, "Check out"
 
       get checkouts_path(day: "2026-09-22")
-      assert_select ".student-name", text: "Mia Alvarez", count: 0
+      assert_select "#checkout-ready .student-name", text: "Mia Alvarez", count: 0
+      assert_select "#checkout-completed .student-name", text: "Mia Alvarez"
+      assert_select "#checkout-completed button", count: 0
     end
   end
 
@@ -98,6 +102,8 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     get checkins_path(day: "2026-09-22")
     assert_select "#checkin_student_#{@mia.id}", text: /Still checked in/
     assert_select "#checkin_student_#{@mia.id} button", count: 0
+      assert_select "#checkin-completed #checkin_student_#{@mia.id}"
+      assert_select "#checkin-ready #checkin_student_#{@noah.id}"
 
     get checkouts_path(day: "2026-09-22")
     assert_select "a", text: /September 21, 2026/

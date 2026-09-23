@@ -7,6 +7,7 @@ class CheckinsController < ApplicationController
     ids = @students.map(&:id)
     @visits_by_student = Attendance.on(@day).where(student_id: ids).order(:checkin).group_by(&:student_id)
     @open_visits = Attendance.open.where(student_id: ids).index_by(&:student_id)
+    @ready_students, @checked_in_students = @students.partition { |student| @open_visits[student.id].nil? }
     @yesterday_ids = Attendance.on(@day - 1).where(student_id: ids).distinct.pluck(:student_id).to_set
   end
 

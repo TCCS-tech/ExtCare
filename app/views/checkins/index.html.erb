@@ -1,21 +1,22 @@
 <% content_for :title, "Check in" %>
-<h1 class="h3 mb-3">Check in</h1>
+<%= render "shared/page_heading", title: "Check in", description: "Find a student and welcome them in for the afternoon.", eyebrow: "STUDENT ATTENDANCE" %>
 
 <%= render "shared/day_toolbar", route: :checkins_path, day: @day, grade: @grade, query: @q, autofocus: true %>
 
-<% if @students.empty? %>
-  <p class="text-body-secondary">No students match.</p>
-<% else %>
-  <div class="list-group shadow-sm">
-    <% @students.each do |student| %>
-      <%= render "student",
-            student: student,
-            visits: @visits_by_student[student.id] || [],
-            open_visit: @open_visits[student.id],
-            here_yesterday: @yesterday_ids.include?(student.id),
-            day: @day,
-            grade: @grade,
-            query: @q %>
-    <% end %>
-  </div>
-<% end %>
+<div data-controller="attendance-lists">
+  <% [["ready", "Ready to check in", @ready_students, "No students waiting to check in."],
+      ["completed", "Already checked in", @checked_in_students, "No students checked in yet."]].each do |key, title, students, empty_message| %>
+    <section class="attendance-section" aria-labelledby="checkin-<%= key %>-heading">
+      <h2 id="checkin-<%= key %>-heading" class="attendance-heading"><%= title %></h2>
+      <div id="checkin-<%= key %>" class="list-group shadow-sm attendance-list" data-attendance-lists-target="<%= key %>">
+        <% students.each do |student| %>
+          <%= render "student", student: student,
+                visits: @visits_by_student[student.id] || [], open_visit: @open_visits[student.id],
+                here_yesterday: @yesterday_ids.include?(student.id), day: @day, grade: @grade, query: @q %>
+        <% end %>
+      </div>
+      <p class="empty-state attendance-empty"><%= empty_message %></p>
+    </section>
+  <% end %>
+  <p class="visually-hidden" role="status" data-attendance-lists-target="status"></p>
+</div>

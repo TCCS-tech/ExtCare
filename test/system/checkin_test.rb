@@ -9,10 +9,10 @@ class CheckinTest < ApplicationSystemTestCase
 
   test "staff checks students in and out from the lists" do
     sign_in users(:staff)
-    assert_text "Check students in and out."
+    assert_text "Welcome to"
     assert_no_link "Admin"
 
-    click_link "Check in"
+    within("nav") { click_link "Check in" }
     assert_text "Zara Quill"
     click_button "4"
     assert_text "Zara Quill"
@@ -32,6 +32,11 @@ class CheckinTest < ApplicationSystemTestCase
       assert_text(/\d{1,2}:\d{2} [AP]M/)
     end
 
+    assert_selector "#checkin-completed #checkin_student_#{@zara.id}"
+    assert_no_selector "#checkin-ready #checkin_student_#{@zara.id}"
+    page.refresh
+    assert_selector "#checkin-completed #checkin_student_#{@zara.id}"
+
     find("a[aria-label='Previous day']").click
     assert_text I18n.l(Date.current - 1, format: :long_day)
 
@@ -42,6 +47,11 @@ class CheckinTest < ApplicationSystemTestCase
       assert_no_button "Check out"
       assert_text(/\d{1,2}:\d{2} [AP]M/)
     end
+
+    assert_selector "#checkout-completed .student-name", text: "Zara Quill"
+    assert_no_selector "#checkout-ready .student-name", text: "Zara Quill"
+    page.refresh
+    assert_selector "#checkout-completed .student-name", text: "Zara Quill"
 
     click_button "Log out"
     assert_text "Sign in"
@@ -67,7 +77,7 @@ class CheckinTest < ApplicationSystemTestCase
     assert_text "Ada Lovelace removed from the lists."
     assert ada.reload.hidden?
 
-    click_link "Check in"
+    within("nav") { click_link "Check in" }
     assert_no_text "Ada Lovelace"
   end
 

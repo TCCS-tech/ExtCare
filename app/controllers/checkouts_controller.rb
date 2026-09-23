@@ -3,11 +3,12 @@ class CheckoutsController < ApplicationController
     @day = SchoolDay.parse(params[:day])
     @grade = params[:grade].presence
     @q = params[:q].to_s
-    @visits = Attendance.open.on(@day)
+    @visits = Attendance.on(@day)
       .joins(:student)
       .merge(Student.named(@q).in_grade(@grade))
       .includes(:student)
       .order(Arel.sql("lower(students.last_name), lower(students.first_name)"))
+    @ready_visits, @checked_out_visits = @visits.partition(&:open?)
     @other_open_days = Attendance.open.where.not(day: @day).distinct.order(:day).pluck(:day)
   end
 

@@ -1,8 +1,9 @@
 <% content_for :title, "New password" %>
 
 <div class="row justify-content-center">
-  <div class="col-12 col-md-5 col-lg-4">
-    <div class="card shadow-sm mt-3">
+  <div class="col-12 auth-column">
+    <div class="card shadow-sm auth-card">
+      <%= render "shared/auth_brand" %>
       <div class="card-body p-4">
         <h1 class="h3 mb-3">Update your password</h1>
         <%= form_with url: password_path(params[:token]), method: :put do |form| %>
