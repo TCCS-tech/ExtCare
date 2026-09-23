@@ -22,6 +22,21 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select "a", text: "Check in"
     assert_select "a", text: "Check out"
     assert_select "a", text: "Admin", count: 0
+    assert_select "p.home-footer > a[href=?][target=_blank][rel=noopener]", "https://tccs.org", text: "Tri-City Christian School"
+  end
+
+  test "home greeting follows the time of day" do
+    sign_in_as @staff
+
+    travel_to Time.zone.local(2026, 9, 22, 9, 15, 0) do
+      get root_path
+      assert_select "h2#actions-heading", text: "Here for the morning."
+    end
+
+    travel_to Time.zone.local(2026, 9, 22, 12, 0, 0) do
+      get root_path
+      assert_select "h2#actions-heading", text: "Here for the afternoon."
+    end
   end
 
   test "check in replaces the button with the time and keeps earlier visits" do

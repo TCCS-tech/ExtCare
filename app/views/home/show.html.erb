@@ -18,7 +18,7 @@
     <div class="home-section-heading">
       <div>
         <p class="home-eyebrow">LET’S GET STARTED</p>
-        <h2 id="actions-heading">Here for the afternoon.</h2>
+        <h2 id="actions-heading">Here for the <%= part_of_day %>.</h2>
       </div>
       <p>Choose an action to manage student attendance.</p>
     </div>
@@ -56,5 +56,5 @@
       <span aria-hidden="true">→</span>
     <% end %>
   <% end %>
-  <p class="home-footer">Tri-City Christian School <span aria-hidden="true">·</span> AfterCare</p>
+  <p class="home-footer"><%= link_to "Tri-City Christian School", "https://tccs.org", target: "_blank", rel: "noopener" %> <span aria-hidden="true">·</span> AfterCare</p>
 </div>
