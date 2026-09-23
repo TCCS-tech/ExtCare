@@ -33,6 +33,10 @@
       <%= form.text_field :guardian_list, class: "form-control", placeholder: "Names, separated by commas", autocomplete: "off" %>
     </div>
     <div class="col-12">
+      <%= form.label :notes, class: "form-label" %>
+      <%= form.text_area :notes, class: "form-control", rows: 4 %>
+    </div>
+    <div class="col-12">
       <div class="d-flex flex-wrap gap-3">
         <div class="form-check">
           <%= form.check_box :staff, class: "form-check-input" %>

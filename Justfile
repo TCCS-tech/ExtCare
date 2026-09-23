@@ -25,4 +25,10 @@ migrate:
     bin/rails db:migrate
 
 reset-db:
-    bin/rails db:reset
+    rm -rf db/structure.sql
+    bin/rails db:drop    
+    bin/rails db:create
+    bin/rails db:migrate
+    bin/rails db:seed
+    bin/rails runner script/import_students.rb 
+    

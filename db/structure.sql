@@ -181,6 +181,7 @@ CREATE TABLE extcare.students (
     blackbaud_id text NOT NULL,
     student_id text NOT NULL,
     guardians text[] DEFAULT '{}'::text[] NOT NULL,
+    notes text,
     staff boolean DEFAULT false NOT NULL,
     prepaid_am boolean DEFAULT false NOT NULL,
     prepaid_pm boolean DEFAULT false NOT NULL,
@@ -326,13 +327,6 @@ CREATE UNIQUE INDEX attendance_one_open_per_student ON extcare.attendance USING 
 
 
 --
--- Name: idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8; Type: INDEX; Schema: extcare; Owner: -
---
-
-CREATE UNIQUE INDEX idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8 ON extcare.students USING btree (blackbaud_id, student_id, first_name, last_name);
-
-
---
 -- Name: index_attendance_on_checkin_by; Type: INDEX; Schema: extcare; Owner: -
 --
 
@@ -358,6 +352,13 @@ CREATE INDEX index_attendance_on_student_id_and_day ON extcare.attendance USING 
 --
 
 CREATE INDEX index_sessions_on_user_id ON extcare.sessions USING btree (user_id);
+
+
+--
+-- Name: index_students_on_blackbaud_id_and_student_id; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_students_on_blackbaud_id_and_student_id ON extcare.students USING btree (blackbaud_id, student_id);
 
 
 --

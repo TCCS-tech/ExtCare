@@ -7,6 +7,7 @@ class CreateStudents < ActiveRecord::Migration[8.1]
       t.text :blackbaud_id, null: false
       t.text :student_id, null: false
       t.text :guardians, array: true, null: false, default: []
+      t.text :notes
       t.boolean :staff, null: false, default: false
       t.boolean :prepaid_am, null: false, default: false
       t.boolean :prepaid_pm, null: false, default: false
@@ -17,6 +18,6 @@ class CreateStudents < ActiveRecord::Migration[8.1]
     add_index :students, :first_name
     add_index :students, :last_name
     add_index :students, :grade
-    add_index :students, [:blackbaud_id, :student_id, :first_name, :last_name], unique: true
+    add_index :students, [:blackbaud_id, :student_id], unique: true
   end
 end

@@ -15,8 +15,9 @@ class Student < ApplicationRecord
 
   validates :first_name, :last_name, :blackbaud_id, :student_id, presence: true
   validates :grade, inclusion: { in: GRADES }
+  # There could be a duplicate student_id with 2 different blackbaud_ids, for split families billing
   validates :blackbaud_id, uniqueness: false, allow_nil: false
-  validates :student_id, uniqueness: true, allow_nil: false
+  validates :student_id, uniqueness: false, allow_nil: false
 
   scope :visible, -> { where(hidden: false) }
   # Grade filters arrive as URL strings: "0" and "K" are Kindergarten, and

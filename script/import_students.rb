@@ -27,24 +27,21 @@ Student.transaction do
   rows.each do |row|
     first_name = row["first_name"].to_s.strip
     last_name = row["last_name"].to_s.strip
+    blackbaud_id = row["blackbaud_id"].to_s.strip.presence
     student_id = row["student_id"].to_s.strip.presence
     grade_level = row["grade"].to_s.strip
     grade = grades.fetch(grade_level) do
       raise "Unknown grade level #{grade_level.inspect} for #{first_name} #{last_name}"
     end
-
-    student = if student_id
-      Student.find_or_initialize_by(student_id: student_id)
-    else
-      Student.find_or_initialize_by(first_name: first_name, last_name: last_name)
-    end
-    was_new = student.new_record?
     notes = row["notes"].to_s
+
+    student = Student.find_or_initialize_by(blackbaud_id: blackbaud_id, student_id: student_id)
+    was_new = student.new_record?
 
     student.assign_attributes(
       first_name: first_name,
       last_name: last_name,
-      blackbaud_id: row["blackbaud_id"].to_s.strip.presence,
+      blackbaud_id: blackbaud_id,
       grade: grade,
       staff: notes.include?("STAFF"),
       prepaid_am: notes.include?("Prepaid AM"),
