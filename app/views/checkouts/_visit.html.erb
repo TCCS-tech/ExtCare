@@ -12,7 +12,7 @@
       </div>
       <div class="small text-body-secondary mt-1">In at <%= clock(visit.checkin) %></div>
     </div>
-    <div class="d-grid d-sm-block">
+    <div class="d-flex align-items-center gap-2">
       <% if visit.checkout %>
         <span class="fs-4 fw-semibold text-nowrap"><%= clock(visit.checkout) %></span>
       <% else %>
@@ -20,7 +20,39 @@
               params: { attendance_id: visit.id, day: day, grade: grade, q: query },
               class: "btn btn-success btn-lg",
               form: { class: "m-0" } %>
+        <button type="button" class="btn btn-outline-secondary btn-lg pickup-details-button" data-bs-toggle="modal" data-bs-target="#pickup-modal-<%= visit.id %>" aria-label="Add pickup name for <%= visit.student.full_name %>" title="Add pickup name">
+          <span aria-hidden="true">…</span>
+        </button>
       <% end %>
     </div>
   </div>
+  <% if visit.open? %>
+    <div class="modal fade" id="pickup-modal-<%= visit.id %>" tabindex="-1" aria-labelledby="pickup-modal-title-<%= visit.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <%= form_with model: visit, url: checkout_path(visit), method: :patch, data: { turbo: false } do |form| %>
+            <%= hidden_field_tag :day, day %>
+            <%= hidden_field_tag :grade, grade %>
+            <%= hidden_field_tag :q, query %>
+            <div class="modal-header">
+              <h2 class="modal-title fs-5" id="pickup-modal-title-<%= visit.id %>">Who is picking up <%= visit.student.first_name %>?</h2>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <%= form.label :pickup_notes, "Pickup person’s name", class: "form-label" %>
+              <%= form.text_field :pickup_notes, class: "form-control", autocomplete: "name", placeholder: "Enter a name", maxlength: 255 %>
+              <div class="form-text">Optional. You can still check out without adding a name.</div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <%= form.submit "Save name", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if visit.pickup_notes.present? %>
+    <div class="small text-body-secondary mt-2">Picked up by <%= visit.pickup_notes %></div>
+  <% end %>
 <% end %>

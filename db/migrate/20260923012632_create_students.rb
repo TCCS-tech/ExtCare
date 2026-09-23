@@ -4,8 +4,8 @@ class CreateStudents < ActiveRecord::Migration[8.1]
       t.text :first_name, null: false
       t.text :last_name, null: false
       t.integer :grade, null: false
-      t.text :blackbaud_id
-      t.text :student_id
+      t.text :blackbaud_id, null: false
+      t.text :student_id, null: false
       t.text :guardians, array: true, null: false, default: []
       t.boolean :staff, null: false, default: false
       t.boolean :prepaid_am, null: false, default: false

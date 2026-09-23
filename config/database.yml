@@ -20,6 +20,6 @@ test:
 
 production:
   <<: *default
-  database: tccs_extcare_production
-  username: tccs_extcare
+  database: neondb
+  username: extcare
   password: <%= ENV["EXTCARE_DATABASE_PASSWORD"] %>

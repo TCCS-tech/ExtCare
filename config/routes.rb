@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :checkins, only: %i[ index create ]
-  resources :checkouts, only: %i[ index create ]
+  resources :checkouts, only: %i[ index create update ]
 
   namespace :admin do
     root "dashboard#show"

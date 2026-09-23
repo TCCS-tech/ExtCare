@@ -15,12 +15,28 @@ class CheckoutsController < ApplicationController
 
   def create
     visit = Attendance.open.find(params.expect(:attendance_id))
-    visit.check_out(by: Current.user)
+    visit.check_out
     @visit = visit
 
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to checkouts_path(day: visit.day, grade: params[:grade], q: params[:q]) }
     end
+  end
+
+  def update
+    @visit = Attendance.find(params[:id])
+    @visit.update!(attendance_params)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to checkouts_path(day: @visit.day, grade: params[:grade], q: params[:q]) }
+    end
+  end
+
+  private
+
+  def attendance_params
+    params.require(:attendance).permit(:pickup_notes)
   end
 end

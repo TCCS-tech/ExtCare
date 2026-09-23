@@ -11,10 +11,12 @@ class Student < ApplicationRecord
 
   normalizes :first_name, :last_name, with: ->(name) { name.to_s.strip.gsub(/\s+/, " ") }
   normalizes :blackbaud_id, with: ->(value) { value.to_s.strip.presence }
+  normalizes :student_id, with: ->(value) { value.to_s.strip.presence }
 
-  validates :first_name, :last_name, presence: true
+  validates :first_name, :last_name, :blackbaud_id, :student_id, presence: true
   validates :grade, inclusion: { in: GRADES }
-  validates :student_id, uniqueness: true, allow_nil: true
+  validates :blackbaud_id, uniqueness: false, allow_nil: false
+  validates :student_id, uniqueness: true, allow_nil: false
 
   scope :visible, -> { where(hidden: false) }
   # Grade filters arrive as URL strings: "0" and "K" are Kindergarten, and

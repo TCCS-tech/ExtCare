@@ -50,7 +50,7 @@ CREATE TABLE attendance (
   checkin      TIMESTAMPTZ NOT NULL,
   checkout     TIMESTAMPTZ,
   checkin_by   BIGINT      NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
-  checkout_by  TEXT,
+  pickup_notes  TEXT,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT attendance_checkout_after_checkin

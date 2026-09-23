@@ -2,11 +2,9 @@ class Attendance < ApplicationRecord
   self.table_name = "attendance"
 
   belongs_to :student, inverse_of: :attendances
-  # Email of the user who checked the student out. The column is text, not a user id.
   belongs_to :recorded_by, class_name: "User", foreign_key: :checkin_by
 
   validates :day, :checkin, presence: true
-  validates :checkout_by, presence: true, if: -> { checkout.present? }
 
   scope :open, -> { where(checkout: nil) }
   scope :on, ->(day) { where(day: day) }
@@ -40,10 +38,10 @@ class Attendance < ApplicationRecord
     record
   end
 
-  def check_out(by:)
+  def check_out
     stamped = Time.current
     stamped = checkin + 1.minute if stamped <= checkin
-    update!(checkout: stamped, checkout_by: by.email)
+    update!(checkout: stamped)
   end
 
   def self.stamp(day)

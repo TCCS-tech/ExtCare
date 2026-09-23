@@ -48,7 +48,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
       assert_not_includes response.body, "Check in"
 
       patch_out = Attendance.last
-      patch_out.check_out(by: @staff)
+      patch_out.check_out
 
       get checkins_path(day: "2026-09-22")
       assert_select "#checkin_student_#{@mia.id}", text: /3:30 PM/
@@ -277,7 +277,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     assert_select "#checkout-ready .student-name" do |names|
       assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)
     end
-    Attendance.open.each { |visit| visit.check_out(by: @staff) }
+    Attendance.open.each(&:check_out)
     get checkouts_path
     assert_select "#checkout-completed .student-name" do |names|
       assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)

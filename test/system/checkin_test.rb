@@ -136,7 +136,7 @@ class CheckinTest < ApplicationSystemTestCase
     10.times do |index|
       time = Time.current - (30 - index * 2).minutes
       Attendance.create!(student: @owen, day: Date.current, checkin: time,
-        checkout: time + 1.minute, checkin_by: users(:staff).id, checkout_by: users(:staff).email)
+        checkout: time + 1.minute, checkin_by: users(:staff).id, pickup_notes: "Jordan Quill")
     end
     Attendance.check_in(student: @zara, by: users(:staff), day: Date.current)
     sign_in users(:admin)

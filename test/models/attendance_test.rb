@@ -38,9 +38,9 @@ class AttendanceTest < ActiveSupport::TestCase
   test "checkout then another checkin on the same day" do
     travel_to Time.zone.local(2026, 9, 22, 15, 30, 0) do
       first = Attendance.check_in(student: @student, by: @staff, day: @day)
-      first.check_out(by: @staff)
+      first.check_out
       assert first.checkout > first.checkin
-      assert_equal @staff.email, first.checkout_by
+      assert_nil first.pickup_notes
 
       second = Attendance.check_in(student: @student, by: @staff, day: @day)
       assert second.persisted?

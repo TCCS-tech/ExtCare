@@ -6,7 +6,7 @@ class CreateAttendance < ActiveRecord::Migration[8.1]
       t.timestamptz :checkin, null: false
       t.timestamptz :checkout
       t.bigint :checkin_by, null: false
-      t.text :checkout_by
+      t.text :pickup_notes
       t.timestamps
     end
 
