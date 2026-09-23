@@ -38,6 +38,10 @@ Student.transaction do
     student = Student.find_or_initialize_by(blackbaud_id: blackbaud_id, student_id: student_id)
     was_new = student.new_record?
 
+    if was_new && Student.exists?(student_id: student_id, first_name: first_name, last_name: last_name)
+      last_name = "#{last_name}-B"
+    end
+
     student.assign_attributes(
       first_name: first_name,
       last_name: last_name,
