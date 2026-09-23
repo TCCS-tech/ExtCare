@@ -1,0 +1,9 @@
+<% content_for :title, "Edit student" %>
+<%= render "shared/page_heading", title: "Edit student", description: "Update student details and guardian information.", eyebrow: "SCHOOL OFFICE" %>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h4 mb-4"><%= @student.full_name %></h2>
+    <%= render "form", student: @student, filters: filter_params %>
+  </div>
+</div>

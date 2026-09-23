@@ -3,7 +3,7 @@ class CheckinsController < ApplicationController
     @day = SchoolDay.parse(params[:day])
     @grade = params[:grade].presence
     @q = params[:q].to_s
-    @students = Student.visible.named(@q).in_grade(@grade).ordered_for_checkin(@day).to_a
+    @students = Student.visible.named(@q).in_grade(@grade).ordered_by_name.to_a
     ids = @students.map(&:id)
     @visits_by_student = Attendance.on(@day).where(student_id: ids).order(:checkin).group_by(&:student_id)
     @open_visits = Attendance.open.where(student_id: ids).index_by(&:student_id)

@@ -49,10 +49,10 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "students who were here yesterday sort first" do
+  test "checkin students sort by first name even when another student was here yesterday" do
     sign_in_as @staff
     Attendance.create!(
-      student: @liam,
+      student: @mia,
       day: Date.new(2026, 9, 21),
       checkin: Time.zone.local(2026, 9, 21, 15, 0),
       checkout: Time.zone.local(2026, 9, 21, 17, 0),
@@ -62,7 +62,7 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
 
     get checkins_path(day: "2026-09-22")
     assert_operator response.body.index("Liam Diaz"), :<, response.body.index("Mia Alvarez")
-    assert_select "#checkin_student_#{@liam.id}", text: /Here yesterday/
+    assert_select "#checkin_student_#{@mia.id}", text: /Here yesterday/
   end
 
   test "grade and name filters and hidden students" do
@@ -156,6 +156,68 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
       get admin_root_path(day: "2026-09-22", attendance_q: "liam")
       assert_select "td", text: "No check-ins on this day."
     end
+  end
+
+  test "admin edits student details while preserving attendance and filters" do
+    sign_in_as @admin
+    visit = Attendance.check_in(student: @mia, by: @staff, day: Date.current)
+    @mia.hide!
+    filters = { student_q: "Alvarez", show_hidden: "1", day: Date.current.to_s }
+    get edit_admin_student_path(@mia), params: filters
+    assert_response :success
+    assert_select "input[name='student[first_name]'][value='Mia']"
+    assert_select "a[href=?]", admin_root_path(filters), text: "Cancel"
+
+    patch admin_student_path(@mia), params: filters.merge(student: {
+      first_name: "Maria", last_name: "Alvarez", grade: 3,
+      blackbaud_id: "BB-EDIT", guardian_list: "Ana Alvarez, Luis Alvarez"
+    })
+    assert_redirected_to admin_root_path(filters)
+    @mia.reload
+    assert_equal "Maria Alvarez", @mia.full_name
+    assert_equal 3, @mia.grade
+    assert_equal "BB-EDIT", @mia.blackbaud_id
+    assert_equal [ "Ana Alvarez", "Luis Alvarez" ], @mia.guardians
+    assert @mia.hidden?
+    assert_equal @mia.id, visit.reload.student_id
+  end
+
+  test "invalid edits show errors and preserve submitted values without saving" do
+    sign_in_as @admin
+    patch admin_student_path(@mia), params: { student: { first_name: "Noah", last_name: "Bennett", grade: 4 } }
+    assert_response :unprocessable_entity
+    assert_select ".alert-danger", text: /already used/
+    assert_select "input[name='student[first_name]'][value='Noah']"
+    assert_equal "Mia Alvarez", @mia.reload.full_name
+    assert_equal 1, @mia.grade
+  end
+
+  test "staff cannot open or submit student edits" do
+    sign_in_as @staff
+    get edit_admin_student_path(@mia)
+    assert_redirected_to root_path
+    patch admin_student_path(@mia), params: { student: { first_name: "Changed", grade: 6 } }
+    assert_redirected_to root_path
+    assert_equal "Mia", @mia.reload.first_name
+    assert_equal 1, @mia.grade
+  end
+
+  test "checkout and admin student lists sort by first name" do
+    sign_in_as @admin
+    [ @mia, @noah, @liam ].each do |student|
+      Attendance.check_in(student: student, by: @staff, day: Date.current)
+    end
+    get checkouts_path
+    assert_select "#checkout-ready .student-name" do |names|
+      assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)
+    end
+    Attendance.open.each { |visit| visit.check_out(by: @staff) }
+    get checkouts_path
+    assert_select "#checkout-completed .student-name" do |names|
+      assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)
+    end
+    get admin_root_path
+    assert_operator response.body.index("Liam Diaz"), :<, response.body.index("Mia Alvarez")
   end
 
   private

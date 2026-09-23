@@ -71,14 +71,25 @@ class CheckinTest < ApplicationSystemTestCase
     ada = Student.find_by!(last_name: "Lovelace")
     assert_equal [ "Ann Lovelace", "Charles Lovelace" ], ada.guardians
 
+    within("tr", text: "Ada Lovelace") { click_link "Edit" }
+    assert_field "First name", with: "Ada"
+    fill_in "First name", with: "Augusta"
+    select "5", from: "Grade"
+    fill_in "Guardians", with: "Ann Lovelace"
+    click_button "Save changes"
+    assert_text "Augusta Lovelace updated."
+    assert_equal "Augusta", ada.reload.first_name
+    assert_equal 5, ada.grade
+    assert_equal [ "Ann Lovelace" ], ada.guardians
+
     accept_confirm do
-      within("tr", text: "Ada Lovelace") { click_button "Remove" }
+      within("tr", text: "Augusta Lovelace") { click_button "Remove" }
     end
-    assert_text "Ada Lovelace removed from the lists."
+    assert_text "Augusta Lovelace removed from the lists."
     assert ada.reload.hidden?
 
     within("nav") { click_link "Check in" }
-    assert_no_text "Ada Lovelace"
+    assert_no_text "Augusta Lovelace"
   end
 
   test "the menu works on a phone" do
@@ -90,6 +101,25 @@ class CheckinTest < ApplicationSystemTestCase
     click_link "Check out"
     assert_text "Check out"
     assert_button "All"
+  end
+
+  test "completed lists stay alphabetical when students finish out of order" do
+    sign_in users(:staff)
+    assert_button "Log out"
+    visit checkins_path
+    [ @zara, @owen ].each do |student|
+      within("#checkin_student_#{student.id}") { click_button "Check in" }
+      assert_selector "#checkin-completed #checkin_student_#{student.id}"
+    end
+    assert_equal [ "Owen Moss", "Zara Quill" ], all("#checkin-completed .student-name").map(&:text)
+
+    visit checkouts_path
+    [ @zara, @owen ].each do |student|
+      visit_id = student.attendances.open.pick(:id)
+      within("#checkout_attendance_#{visit_id}") { click_button "Check out" }
+      assert_selector "#checkout-completed #checkout_attendance_#{visit_id}"
+    end
+    assert_equal [ "Owen Moss", "Zara Quill" ], all("#checkout-completed .student-name").map(&:text)
   end
 
   private

@@ -7,7 +7,8 @@ class CheckoutsController < ApplicationController
       .joins(:student)
       .merge(Student.named(@q).in_grade(@grade))
       .includes(:student)
-      .order(Arel.sql("lower(students.last_name), lower(students.first_name)"))
+      .merge(Student.ordered_by_name)
+      .order(:checkin, :id)
     @ready_visits, @checked_out_visits = @visits.partition(&:open?)
     @other_open_days = Attendance.open.where.not(day: @day).distinct.order(:day).pluck(:day)
   end

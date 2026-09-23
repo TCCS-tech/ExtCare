@@ -24,16 +24,8 @@ class Student < ApplicationRecord
       q: like
     )
   }
-  scope :ordered_for_checkin, ->(day) {
-    order(Arel.sql(sanitize_sql_array([ <<~SQL.squish, day - 1 ])))
-      EXISTS (
-        SELECT 1 FROM attendance
-        WHERE attendance.student_id = students.id
-          AND attendance.day = ?
-      ) DESC,
-      lower(students.last_name),
-      lower(students.first_name)
-    SQL
+  scope :ordered_by_name, -> {
+    order(Arel.sql("lower(students.first_name), lower(students.last_name), students.id"))
   }
 
   def full_name

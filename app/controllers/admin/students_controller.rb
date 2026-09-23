@@ -9,24 +9,35 @@ class Admin::StudentsController < Admin::BaseController
     end
   end
 
+  def edit
+    @student = Student.find(params[:id])
+  end
+
   def update
-    student = Student.find(params[:id])
-    if ActiveModel::Type::Boolean.new.cast(visibility_params[:hidden])
-      student.hide!
-      redirect_to admin_root_path(filter_params), notice: "#{student.full_name} removed from the lists."
+    @student = Student.find(params[:id])
+    attributes = params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :guardian_list, :hidden ])
+
+    if attributes.key?(:hidden)
+      if ActiveModel::Type::Boolean.new.cast(attributes[:hidden])
+        @student.hide!
+        notice = "#{@student.full_name} removed from the lists."
+      else
+        @student.restore!
+        notice = "#{@student.full_name} restored."
+      end
+      redirect_to admin_root_path(filter_params), notice: notice
+    elsif @student.update(attributes)
+      redirect_to admin_root_path(filter_params), notice: "#{@student.full_name} updated."
     else
-      student.restore!
-      redirect_to admin_root_path(filter_params), notice: "#{student.full_name} restored."
+      render :edit, status: :unprocessable_entity
     end
   end
+
+  helper_method :filter_params
 
   private
     def student_params
       params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :guardian_list ])
-    end
-
-    def visibility_params
-      params.expect(student: [ :hidden ])
     end
 
     def filter_params

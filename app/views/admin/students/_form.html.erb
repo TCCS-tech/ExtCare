@@ -1,0 +1,39 @@
+<%# locals: (student:, filters:) %>
+<% if student.errors.any? %>
+  <div class="alert alert-danger"><%= student.errors.full_messages.to_sentence %></div>
+<% end %>
+
+<%= form_with model: student, url: student.persisted? ? admin_student_path(student) : admin_students_path, class: "mb-4" do |form| %>
+  <% filters.each do |key, value| %>
+    <%= hidden_field_tag key, value %>
+  <% end %>
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <%= form.label :first_name, "First name", class: "form-label" %>
+      <%= form.text_field :first_name, class: "form-control", required: true, autocomplete: "off" %>
+    </div>
+    <div class="col-12 col-md-4">
+      <%= form.label :last_name, "Last name", class: "form-label" %>
+      <%= form.text_field :last_name, class: "form-control", required: true, autocomplete: "off" %>
+    </div>
+    <div class="col-6 col-md-2">
+      <%= form.label :grade, class: "form-label" %>
+      <%= form.select :grade, (1..6).to_a, { include_blank: "Grade" }, class: "form-select", required: true %>
+    </div>
+    <div class="col-6 col-md-2">
+      <%= form.label :blackbaud_id, "Blackbaud ID", class: "form-label" %>
+      <%= form.text_field :blackbaud_id, class: "form-control", autocomplete: "off" %>
+    </div>
+    <div class="col-12">
+      <%= form.label :guardian_list, "Guardians", class: "form-label" %>
+      <%= form.text_field :guardian_list, class: "form-control", placeholder: "Names, separated by commas", autocomplete: "off" %>
+    </div>
+    <div class="col-12">
+      <%= form.submit(student.persisted? ? "Save changes" : "Add student", class: "btn btn-primary") %>
+      <% if student.persisted? %>
+        <%= link_to "Cancel", admin_root_path(filters), class: "btn btn-outline-secondary ms-2" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+

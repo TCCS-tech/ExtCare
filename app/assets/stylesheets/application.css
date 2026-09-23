@@ -553,3 +553,24 @@ main.container {
 .attendance-list .list-group-item:focus-within {
   z-index: 1;
 }
+
+.attendance-feedback:not(:empty) {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1030;
+  max-width: calc(100% - 2rem);
+  width: max-content;
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--school-navy);
+  color: #fff;
+  box-shadow: 0 4px 18px #202d4c26;
+  pointer-events: none;
+}
+
+.attendance-row {
+  padding-block: 1rem;
+}

@@ -3,7 +3,7 @@
 
 <%= render "shared/day_toolbar", route: :checkins_path, day: @day, grade: @grade, query: @q, autofocus: true %>
 
-<div data-controller="attendance-lists">
+<div data-controller="attendance-lists" data-action="turbo:before-cache@document->attendance-lists#finishTransitions">
   <% [["ready", "Ready to check in", @ready_students, "No students waiting to check in."],
       ["completed", "Already checked in", @checked_in_students, "No students checked in yet."]].each do |key, title, students, empty_message| %>
     <section class="attendance-section" aria-labelledby="checkin-<%= key %>-heading">
@@ -18,5 +18,5 @@
       <p class="empty-state attendance-empty"><%= empty_message %></p>
     </section>
   <% end %>
-  <p class="visually-hidden" role="status" data-attendance-lists-target="status"></p>
+  <p class="attendance-feedback" role="status" data-attendance-lists-target="status"></p>
 </div>

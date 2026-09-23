@@ -2,7 +2,7 @@
 <% completed = visits.select { |visit| visit.checkout.present? } %>
 <% open_today = open_visit if open_visit&.day == day %>
 
-<%= tag.div id: dom_id(student, :checkin), class: "list-group-item px-3 py-3", data: { attendance_lists_target: "item", completed: open_visit.present?, attendance_status: "Checked in" } do %>
+<%= tag.div id: dom_id(student, :checkin), class: "list-group-item attendance-row", data: { attendance_lists_target: "item", first_name: student.first_name.downcase, last_name: student.last_name.downcase, student_id: student.id, completed: open_visit.present?, attendance_status: "Checked in" } do %>
   <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
     <div>
       <div class="d-flex flex-wrap align-items-center gap-2">

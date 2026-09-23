@@ -6,40 +6,7 @@
     <h2 class="h4">Students</h2>
     <p class="text-body-secondary">Removing a student hides them from check-in and check-out. Their records stay.</p>
 
-    <% if @student.errors.any? %>
-      <div class="alert alert-danger"><%= @student.errors.full_messages.to_sentence %></div>
-    <% end %>
-
-    <%= form_with model: @student, url: admin_students_path, class: "mb-4" do |form| %>
-      <% admin_filter_params.each do |key, value| %>
-        <%= hidden_field_tag key, value %>
-      <% end %>
-      <div class="row g-3">
-        <div class="col-12 col-md-4">
-          <%= form.label :first_name, "First name", class: "form-label" %>
-          <%= form.text_field :first_name, class: "form-control", required: true, autocomplete: "off" %>
-        </div>
-        <div class="col-12 col-md-4">
-          <%= form.label :last_name, "Last name", class: "form-label" %>
-          <%= form.text_field :last_name, class: "form-control", required: true, autocomplete: "off" %>
-        </div>
-        <div class="col-6 col-md-2">
-          <%= form.label :grade, class: "form-label" %>
-          <%= form.select :grade, (1..6).to_a, { include_blank: "Grade" }, class: "form-select", required: true %>
-        </div>
-        <div class="col-6 col-md-2">
-          <%= form.label :blackbaud_id, "Blackbaud ID", class: "form-label" %>
-          <%= form.text_field :blackbaud_id, class: "form-control", autocomplete: "off" %>
-        </div>
-        <div class="col-12">
-          <%= form.label :guardian_list, "Guardians", class: "form-label" %>
-          <%= form.text_field :guardian_list, class: "form-control", placeholder: "Names, separated by commas", autocomplete: "off" %>
-        </div>
-        <div class="col-12">
-          <%= form.submit "Add student", class: "btn btn-primary" %>
-        </div>
-      </div>
-    <% end %>
+    <%= render "admin/students/form", student: @student, filters: admin_filter_params %>
 
     <%= form_with url: admin_root_path, method: :get, class: "mb-3", data: { controller: "roster-filter", turbo_action: "advance" } do %>
       <%= hidden_field_tag :day, @day %>
@@ -86,17 +53,20 @@
                 <td><%= student.blackbaud_id %></td>
                 <td><%= student.guardian_list %></td>
                 <td class="text-end">
-                  <% if student.hidden? %>
-                    <%= button_to "Restore", admin_student_path(student), method: :patch,
-                          params: { student: { hidden: false } }.merge(admin_filter_params),
-                          class: "btn btn-outline-primary btn-sm",
-                          form: { class: "m-0", data: { turbo_frame: "_top" } } %>
-                  <% else %>
-                    <%= button_to "Remove", admin_student_path(student), method: :patch,
-                          params: { student: { hidden: true } }.merge(admin_filter_params),
-                          class: "btn btn-outline-danger btn-sm",
-                          form: { class: "m-0", data: { turbo_frame: "_top", turbo_confirm: "Remove #{student.full_name} from the check-in lists? Their records stay in the database." } } %>
-                  <% end %>
+                  <div class="d-flex justify-content-end gap-2">
+                    <%= link_to "Edit", edit_admin_student_path(student, admin_filter_params), class: "btn btn-outline-primary btn-sm", aria: { label: "Edit #{student.full_name}" } %>
+                    <% if student.hidden? %>
+                      <%= button_to "Restore", admin_student_path(student), method: :patch,
+                            params: { student: { hidden: false } }.merge(admin_filter_params),
+                            class: "btn btn-outline-primary btn-sm",
+                            form: { class: "m-0", data: { turbo_frame: "_top" } } %>
+                    <% else %>
+                      <%= button_to "Remove", admin_student_path(student), method: :patch,
+                            params: { student: { hidden: true } }.merge(admin_filter_params),
+                            class: "btn btn-outline-danger btn-sm",
+                            form: { class: "m-0", data: { turbo_frame: "_top", turbo_confirm: "Remove #{student.full_name} from the check-in lists? Their records stay in the database." } } %>
+                    <% end %>
+                  </div>
                 </td>
               </tr>
             <% end %>

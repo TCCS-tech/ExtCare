@@ -12,7 +12,7 @@
   </div>
 <% end %>
 
-<div data-controller="attendance-lists">
+<div data-controller="attendance-lists" data-action="turbo:before-cache@document->attendance-lists#finishTransitions">
   <% [["ready", "Ready to check out", @ready_visits, "No students are waiting to check out."],
       ["completed", "Already checked out", @checked_out_visits, "No students checked out yet."]].each do |key, title, visits, empty_message| %>
     <section class="attendance-section" aria-labelledby="checkout-<%= key %>-heading">
@@ -25,5 +25,5 @@
       <p class="empty-state attendance-empty"><%= empty_message %></p>
     </section>
   <% end %>
-  <p class="visually-hidden" role="status" data-attendance-lists-target="status"></p>
+  <p class="attendance-feedback" role="status" data-attendance-lists-target="status"></p>
 </div>
