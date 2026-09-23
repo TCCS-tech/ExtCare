@@ -16,8 +16,15 @@
         <%= link_to "Back to today", public_send(route, grade: grade.presence, q: query.presence), class: "small" %>
       <% end %>
     </div>
-    <%= link_to public_send(route, day: day + 1, grade: grade.presence, q: query.presence), class: "btn btn-outline-secondary btn-lg px-3", aria: { label: "Next day" } do %>
-      <span aria-hidden="true">&rsaquo;</span>
+    <% if day < Date.current %>
+      <%= link_to public_send(route, day: day + 1, grade: grade.presence, q: query.presence), class: "btn btn-outline-secondary btn-lg px-3", aria: { label: "Next day" } do %>
+        <span aria-hidden="true">&rsaquo;</span>
+      <% end %>
+    <% else %>
+      <%# Today is the last day that can be viewed. Keep a disabled button so the row keeps its shape and the arrow is visibly spent. %>
+      <button type="button" class="btn btn-outline-secondary btn-lg px-3" disabled aria-label="Next day">
+        <span aria-hidden="true">&rsaquo;</span>
+      </button>
     <% end %>
   </div>
 

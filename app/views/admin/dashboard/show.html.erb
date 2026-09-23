@@ -11,7 +11,7 @@
       <div class="row g-2">
         <div class="col-12 col-md-4">
           <label class="visually-hidden" for="attendance_day">Day</label>
-          <%= date_field_tag :day, @day, id: "attendance_day", class: "form-control", data: { action: "change->roster-filter#submitNow" } %>
+          <%= date_field_tag :day, @day, id: "attendance_day", class: "form-control", max: Date.current, data: { action: "change->roster-filter#submitNow" } %>
         </div>
         <div class="col-12 col-md-8">
           <label class="visually-hidden" for="attendance_q">Search check-ins</label>

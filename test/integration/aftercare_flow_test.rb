@@ -80,6 +80,41 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select "#checkin_student_#{@mia.id}", text: /Here yesterday/
   end
 
+  test "the day arrows and the day param stop at today" do
+    sign_in_as @staff
+    yesterday = Date.current - 1
+
+    get checkins_path(day: yesterday)
+    assert_select "a[aria-label='Next day'][href=?]", checkins_path(day: yesterday + 1)
+
+    get checkins_path(day: Date.current)
+    assert_select "a[aria-label='Next day']", count: 0
+    assert_select "button[disabled][aria-label='Next day']", count: 1
+
+    get checkins_path(day: Date.current + 3)
+    assert_select "input[name='day'][value=?]", Date.current.iso8601
+    assert_select "a[aria-label='Next day']", count: 0
+
+    get checkouts_path(day: Date.current + 3)
+    assert_select "input[name='day'][value=?]", Date.current.iso8601
+    assert_select "a[aria-label='Next day']", count: 0
+
+    sign_in_as @admin
+
+    get admin_root_path(day: Date.current + 3)
+    assert_select "input#attendance_day[value=?]", Date.current.iso8601
+    assert_select "input#attendance_day[max=?]", Date.current.iso8601
+  end
+
+  test "a check-in aimed at a future day is recorded for today" do
+    sign_in_as @staff
+
+    post checkins_path, params: { student_id: @mia.id, day: (Date.current + 3).iso8601 }, as: :turbo_stream
+
+    assert_equal Date.current, Attendance.last.day
+    assert_operator Attendance.last.checkin, :<=, Time.current
+  end
+
   test "grade and name filters and hidden students" do
     sign_in_as @staff
     get checkins_path(grade: 2, q: "dia")
