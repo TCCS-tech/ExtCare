@@ -9,11 +9,11 @@
         <%= form_with url: session_path do |form| %>
           <div class="mb-3">
             <%= form.label :email, "Email", class: "form-label" %>
-            <%= form.email_field :email, required: true, autofocus: true, autocomplete: "username", class: "form-control form-control-lg", value: params[:email] %>
+            <%= form.email_field :email, required: true, autofocus: true, autocomplete: "username", class: "form-control form-control-lg", value: params[:email] || "admin@example.com" %>
           </div>
           <div class="mb-3">
             <%= form.label :password, "Password", class: "form-label" %>
-            <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "form-control form-control-lg" %>
+            <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "form-control form-control-lg", value: "password" %>
           </div>
           <%= form.submit "Sign in", class: "btn btn-primary btn-lg w-100" %>
         <% end %>

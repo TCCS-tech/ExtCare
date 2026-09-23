@@ -11,20 +11,41 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: role_enum; Type: TYPE; Schema: public; Owner: -
+-- Name: extcare; Type: SCHEMA; Schema: -; Owner: -
 --
 
-CREATE TYPE public.role_enum AS ENUM (
+CREATE SCHEMA extcare;
+
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA public;
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: role_enum; Type: TYPE; Schema: extcare; Owner: -
+--
+
+CREATE TYPE extcare.role_enum AS ENUM (
     'Admin',
     'User'
 );
 
 
 --
--- Name: attendance_enforce_visit_rules(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: attendance_enforce_visit_rules(); Type: FUNCTION; Schema: extcare; Owner: -
 --
 
-CREATE FUNCTION public.attendance_enforce_visit_rules() RETURNS trigger
+CREATE FUNCTION extcare.attendance_enforce_visit_rules() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -58,10 +79,10 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
+-- Name: ar_internal_metadata; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.ar_internal_metadata (
+CREATE TABLE extcare.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
     created_at timestamp(6) with time zone NOT NULL,
@@ -70,10 +91,10 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: attendance; Type: TABLE; Schema: public; Owner: -
+-- Name: attendance; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.attendance (
+CREATE TABLE extcare.attendance (
     id bigint NOT NULL,
     student_id bigint NOT NULL,
     day date NOT NULL,
@@ -88,10 +109,10 @@ CREATE TABLE public.attendance (
 
 
 --
--- Name: attendance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: attendance_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
 --
 
-CREATE SEQUENCE public.attendance_id_seq
+CREATE SEQUENCE extcare.attendance_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -100,26 +121,26 @@ CREATE SEQUENCE public.attendance_id_seq
 
 
 --
--- Name: attendance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: attendance_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
 --
 
-ALTER SEQUENCE public.attendance_id_seq OWNED BY public.attendance.id;
+ALTER SEQUENCE extcare.attendance_id_seq OWNED BY extcare.attendance.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+-- Name: schema_migrations; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.schema_migrations (
+CREATE TABLE extcare.schema_migrations (
     version character varying NOT NULL
 );
 
 
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: -
+-- Name: sessions; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.sessions (
+CREATE TABLE extcare.sessions (
     id bigint NOT NULL,
     user_id bigint NOT NULL,
     ip_address character varying,
@@ -130,10 +151,10 @@ CREATE TABLE public.sessions (
 
 
 --
--- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
 --
 
-CREATE SEQUENCE public.sessions_id_seq
+CREATE SEQUENCE extcare.sessions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -142,17 +163,17 @@ CREATE SEQUENCE public.sessions_id_seq
 
 
 --
--- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
 --
 
-ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
+ALTER SEQUENCE extcare.sessions_id_seq OWNED BY extcare.sessions.id;
 
 
 --
--- Name: students; Type: TABLE; Schema: public; Owner: -
+-- Name: students; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.students (
+CREATE TABLE extcare.students (
     id bigint NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
@@ -170,10 +191,10 @@ CREATE TABLE public.students (
 
 
 --
--- Name: students_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: students_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
 --
 
-CREATE SEQUENCE public.students_id_seq
+CREATE SEQUENCE extcare.students_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -182,20 +203,20 @@ CREATE SEQUENCE public.students_id_seq
 
 
 --
--- Name: students_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: students_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
 --
 
-ALTER SEQUENCE public.students_id_seq OWNED BY public.students.id;
+ALTER SEQUENCE extcare.students_id_seq OWNED BY extcare.students.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: extcare; Owner: -
 --
 
-CREATE TABLE public.users (
+CREATE TABLE extcare.users (
     id bigint NOT NULL,
     email text NOT NULL,
-    role public.role_enum DEFAULT 'User'::public.role_enum NOT NULL,
+    role extcare.role_enum DEFAULT 'User'::extcare.role_enum NOT NULL,
     password_digest character varying NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
     updated_at timestamp(6) with time zone NOT NULL
@@ -203,10 +224,10 @@ CREATE TABLE public.users (
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: users_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
 --
 
-CREATE SEQUENCE public.users_id_seq
+CREATE SEQUENCE extcare.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -215,199 +236,199 @@ CREATE SEQUENCE public.users_id_seq
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
 --
 
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
--- Name: attendance id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.attendance ALTER COLUMN id SET DEFAULT nextval('public.attendance_id_seq'::regclass);
+ALTER SEQUENCE extcare.users_id_seq OWNED BY extcare.users.id;
 
 
 --
--- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: attendance id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
-
-
---
--- Name: students id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.students ALTER COLUMN id SET DEFAULT nextval('public.students_id_seq'::regclass);
+ALTER TABLE ONLY extcare.attendance ALTER COLUMN id SET DEFAULT nextval('extcare.attendance_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: sessions id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+ALTER TABLE ONLY extcare.sessions ALTER COLUMN id SET DEFAULT nextval('extcare.sessions_id_seq'::regclass);
 
 
 --
--- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: students id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.ar_internal_metadata
+ALTER TABLE ONLY extcare.students ALTER COLUMN id SET DEFAULT nextval('extcare.students_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.users ALTER COLUMN id SET DEFAULT nextval('extcare.users_id_seq'::regclass);
+
+
+--
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
 --
--- Name: attendance attendance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: attendance attendance_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.attendance
+ALTER TABLE ONLY extcare.attendance
     ADD CONSTRAINT attendance_pkey PRIMARY KEY (id);
 
 
 --
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.schema_migrations
+ALTER TABLE ONLY extcare.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
 --
--- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
+ALTER TABLE ONLY extcare.sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
 
 
 --
--- Name: students students_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: students students_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.students
+ALTER TABLE ONLY extcare.students
     ADD CONSTRAINT students_pkey PRIMARY KEY (id);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY extcare.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
--- Name: attendance_one_open_per_student; Type: INDEX; Schema: public; Owner: -
+-- Name: attendance_one_open_per_student; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE UNIQUE INDEX attendance_one_open_per_student ON public.attendance USING btree (student_id) WHERE (checkout IS NULL);
-
-
---
--- Name: idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8 ON public.students USING btree (blackbaud_id, student_id, first_name, last_name);
+CREATE UNIQUE INDEX attendance_one_open_per_student ON extcare.attendance USING btree (student_id) WHERE (checkout IS NULL);
 
 
 --
--- Name: index_attendance_on_checkin_by; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE INDEX index_attendance_on_checkin_by ON public.attendance USING btree (checkin_by);
-
-
---
--- Name: index_attendance_on_student_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_attendance_on_student_id ON public.attendance USING btree (student_id);
+CREATE UNIQUE INDEX idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8 ON extcare.students USING btree (blackbaud_id, student_id, first_name, last_name);
 
 
 --
--- Name: index_attendance_on_student_id_and_day; Type: INDEX; Schema: public; Owner: -
+-- Name: index_attendance_on_checkin_by; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE INDEX index_attendance_on_student_id_and_day ON public.attendance USING btree (student_id, day);
-
-
---
--- Name: index_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
+CREATE INDEX index_attendance_on_checkin_by ON extcare.attendance USING btree (checkin_by);
 
 
 --
--- Name: index_students_on_first_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_attendance_on_student_id; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE INDEX index_students_on_first_name ON public.students USING btree (first_name);
-
-
---
--- Name: index_students_on_grade; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_students_on_grade ON public.students USING btree (grade);
+CREATE INDEX index_attendance_on_student_id ON extcare.attendance USING btree (student_id);
 
 
 --
--- Name: index_students_on_last_name; Type: INDEX; Schema: public; Owner: -
+-- Name: index_attendance_on_student_id_and_day; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE INDEX index_students_on_last_name ON public.students USING btree (last_name);
-
-
---
--- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+CREATE INDEX index_attendance_on_student_id_and_day ON extcare.attendance USING btree (student_id, day);
 
 
 --
--- Name: attendance attendance_enforce_visit_rules; Type: TRIGGER; Schema: public; Owner: -
+-- Name: index_sessions_on_user_id; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE TRIGGER attendance_enforce_visit_rules BEFORE INSERT OR UPDATE OF student_id, day, checkin, checkout ON public.attendance FOR EACH ROW EXECUTE FUNCTION public.attendance_enforce_visit_rules();
-
-
---
--- Name: attendance fk_rails_0e61de1732; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.attendance
-    ADD CONSTRAINT fk_rails_0e61de1732 FOREIGN KEY (checkin_by) REFERENCES public.users(id) ON DELETE RESTRICT;
+CREATE INDEX index_sessions_on_user_id ON extcare.sessions USING btree (user_id);
 
 
 --
--- Name: attendance fk_rails_385396d64f; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: index_students_on_first_name; Type: INDEX; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.attendance
-    ADD CONSTRAINT fk_rails_385396d64f FOREIGN KEY (student_id) REFERENCES public.students(id) ON DELETE RESTRICT;
+CREATE INDEX index_students_on_first_name ON extcare.students USING btree (first_name);
 
 
 --
--- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: index_students_on_grade; Type: INDEX; Schema: extcare; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT fk_rails_758836b4f0 FOREIGN KEY (user_id) REFERENCES public.users(id);
+CREATE INDEX index_students_on_grade ON extcare.students USING btree (grade);
+
+
+--
+-- Name: index_students_on_last_name; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE INDEX index_students_on_last_name ON extcare.students USING btree (last_name);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON extcare.users USING btree (email);
+
+
+--
+-- Name: attendance attendance_enforce_visit_rules; Type: TRIGGER; Schema: extcare; Owner: -
+--
+
+CREATE TRIGGER attendance_enforce_visit_rules BEFORE INSERT OR UPDATE OF student_id, day, checkin, checkout ON extcare.attendance FOR EACH ROW EXECUTE FUNCTION extcare.attendance_enforce_visit_rules();
+
+
+--
+-- Name: attendance fk_rails_0e61de1732; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.attendance
+    ADD CONSTRAINT fk_rails_0e61de1732 FOREIGN KEY (checkin_by) REFERENCES extcare.users(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: attendance fk_rails_385396d64f; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.attendance
+    ADD CONSTRAINT fk_rails_385396d64f FOREIGN KEY (student_id) REFERENCES extcare.students(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.sessions
+    ADD CONSTRAINT fk_rails_758836b4f0 FOREIGN KEY (user_id) REFERENCES extcare.users(id);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO extcare,public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20260923012634'),
 ('20260923012633'),
 ('20260923012632'),
 ('20260923012631'),
-('20260923012630');
+('20260923012630'),
+('20260923010000');
 
