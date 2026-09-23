@@ -608,3 +608,82 @@ main.container {
   outline: 3px solid var(--school-burgundy);
   outline-offset: 2px;
 }
+
+.student-breadcrumb {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--school-muted);
+}
+
+.student-workspace {
+  margin-bottom: 1.5rem;
+}
+
+.student-search-panel {
+  padding: 2rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.student-search-panel {
+  border-top: 3px solid var(--school-burgundy);
+}
+
+.student-search-inputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.student-search-inputs .form-control {
+  min-width: 0;
+}
+
+.student-search-inputs .btn {
+  padding-inline: 1.25rem;
+}
+
+.student-results {
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.student-search-empty {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.student-results-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.student-results th {
+  background: #f8f9fb;
+  font-size: 0.8rem;
+  color: var(--school-muted);
+}
+
+.student-results td,
+.student-results th {
+  padding: 1rem;
+}
+
+.student-results-note {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  color: var(--school-muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 767.98px) {
+  .student-search-panel { padding: 1.25rem; }
+}
