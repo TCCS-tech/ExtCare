@@ -8,6 +8,7 @@
         <% if visit.student.hidden? %>
           <span class="badge text-bg-secondary">Removed</span>
         <% end %>
+        <%= render "shared/student_flags", student: visit.student %>
       </div>
       <div class="small text-body-secondary mt-1">In at <%= clock(visit.checkin) %></div>
     </div>

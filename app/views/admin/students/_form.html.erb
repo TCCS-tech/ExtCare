@@ -29,6 +29,22 @@
       <%= form.text_field :guardian_list, class: "form-control", placeholder: "Names, separated by commas", autocomplete: "off" %>
     </div>
     <div class="col-12">
+      <div class="d-flex flex-wrap gap-3">
+        <div class="form-check">
+          <%= form.check_box :staff, class: "form-check-input" %>
+          <%= form.label :staff, "Staff", class: "form-check-label" %>
+        </div>
+        <div class="form-check">
+          <%= form.check_box :prepaid_am, class: "form-check-input" %>
+          <%= form.label :prepaid_am, "Prepaid AM", class: "form-check-label" %>
+        </div>
+        <div class="form-check">
+          <%= form.check_box :prepaid_pm, class: "form-check-input" %>
+          <%= form.label :prepaid_pm, "Prepaid PM", class: "form-check-label" %>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
       <%= form.submit(student.persisted? ? "Save changes" : "Add student", class: "btn btn-primary") %>
       <% if student.persisted? %>
         <%= link_to "Cancel", admin_root_path(filters), class: "btn btn-outline-secondary ms-2" %>

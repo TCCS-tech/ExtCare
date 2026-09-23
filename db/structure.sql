@@ -161,7 +161,10 @@ CREATE TABLE public.students (
     guardians text[] DEFAULT '{}'::text[] NOT NULL,
     hidden boolean DEFAULT false NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
-    updated_at timestamp(6) with time zone NOT NULL
+    updated_at timestamp(6) with time zone NOT NULL,
+    staff boolean DEFAULT false NOT NULL,
+    prepaid_am boolean DEFAULT false NOT NULL,
+    prepaid_pm boolean DEFAULT false NOT NULL
 );
 
 
@@ -387,6 +390,7 @@ ALTER TABLE ONLY public.sessions
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260923153334'),
 ('20260923012634'),
 ('20260923012633'),
 ('20260923012632'),

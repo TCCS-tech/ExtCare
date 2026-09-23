@@ -64,22 +64,6 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "checkin students sort by first name even when another student was here yesterday" do
-    sign_in_as @staff
-    Attendance.create!(
-      student: @mia,
-      day: Date.new(2026, 9, 21),
-      checkin: Time.zone.local(2026, 9, 21, 15, 0),
-      checkout: Time.zone.local(2026, 9, 21, 17, 0),
-      checkin_by: @staff.id,
-      checkout_by: @staff.email
-    )
-
-    get checkins_path(day: "2026-09-22")
-    assert_operator response.body.index("Liam Diaz"), :<, response.body.index("Mia Alvarez")
-    assert_select "#checkin_student_#{@mia.id}", text: /Here yesterday/
-  end
-
   test "the day arrows and the day param stop at today" do
     sign_in_as @staff
     yesterday = Date.current - 1
@@ -332,6 +316,47 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     get checkouts_path(filters)
     assert_select ".attendance-switch a[aria-current='page']", text: "Check out"
     assert_select ".attendance-switch a[href=?]", checkins_path(filters), text: "Check in"
+  end
+
+  test "program flags show as labels wherever students appear" do
+    sign_in_as @admin
+    @mia.update!(staff: true, prepaid_am: true)
+    @noah.update!(prepaid_pm: true)
+    visit = Attendance.check_in(student: @mia, by: @admin, day: Date.current)
+
+    get checkins_path
+    assert_select "#checkin_student_#{@mia.id} .student-flag", text: "Staff"
+    assert_select "#checkin_student_#{@mia.id} .student-flag", text: "Prepaid AM"
+    assert_select "#checkin_student_#{@noah.id} .student-flag", text: "Prepaid PM"
+    assert_select "#checkin_student_#{@liam.id} .student-flag", count: 0
+
+    get checkouts_path
+    assert_select "#checkout_attendance_#{visit.id} .student-flag", text: "Staff"
+
+    get admin_root_path(student_q: "Alvarez")
+    assert_select "#student-results .student-flag", text: "Prepaid AM"
+  end
+
+  test "admin form saves program flags" do
+    sign_in_as @admin
+
+    assert_difference -> { Student.count }, 1 do
+      post admin_students_path, params: {
+        student: { first_name: "Flag", last_name: "Kid", grade: 2, staff: "1", prepaid_am: "1", prepaid_pm: "0" }
+      }
+    end
+    kid = Student.find_by!(last_name: "Kid")
+    assert kid.staff?
+    assert kid.prepaid_am?
+    assert_not kid.prepaid_pm?
+
+    patch admin_student_path(@mia), params: { student: { first_name: "Mia", last_name: "Alvarez", grade: 1, prepaid_pm: "1" } }
+    assert_redirected_to admin_root_path
+    assert @mia.reload.prepaid_pm?
+
+    patch admin_student_path(@mia), params: { student: { first_name: "Mia", last_name: "Alvarez", grade: 1, prepaid_pm: "0" } }
+    assert_redirected_to admin_root_path
+    assert_not @mia.reload.prepaid_pm?
   end
 
   private

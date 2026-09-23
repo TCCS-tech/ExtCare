@@ -31,4 +31,14 @@ class StudentTest < ActiveSupport::TestCase
       assert_equal 2, Student.in_grade(filter).count, "#{filter.inspect} should not filter by grade"
     end
   end
+
+  test "flags read back as labels in display order" do
+    assert_empty @first.flag_labels
+
+    @first.update!(prepaid_pm: true, staff: true)
+    assert_equal [ "Staff", "Prepaid PM" ], @first.reload.flag_labels
+
+    @first.update!(prepaid_am: true)
+    assert_equal [ "Staff", "Prepaid AM", "Prepaid PM" ], @first.reload.flag_labels
+  end
 end

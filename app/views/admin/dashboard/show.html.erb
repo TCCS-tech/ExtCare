@@ -92,12 +92,13 @@
                 <th>Grade</th>
                 <th>Blackbaud ID</th>
                 <th>Guardians</th>
+                <th>Flags</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               <% if @students.empty? %>
-                <tr><td colspan="5" class="text-body-secondary">No students match.</td></tr>
+                <tr><td colspan="6" class="text-body-secondary">No students match.</td></tr>
               <% else %>
                 <% @students.each do |student| %>
                   <tr>
@@ -110,6 +111,7 @@
                     <td><%= student.grade_label %></td>
                     <td><%= student.blackbaud_id %></td>
                     <td><%= student.guardian_list %></td>
+                    <td class="text-nowrap"><%= render "shared/student_flags", student: student %></td>
                     <td class="text-end">
                       <div class="d-flex justify-content-end gap-2">
                         <%= link_to "Edit", edit_admin_student_path(student, admin_filter_params), class: "btn btn-outline-primary btn-sm", aria: { label: "Edit #{student.full_name}" } %>

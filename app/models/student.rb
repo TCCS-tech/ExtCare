@@ -3,6 +3,9 @@ class Student < ApplicationRecord
   # grade 0 and shown as "K" everywhere in the UI.
   KINDERGARTEN = 0
   GRADES = (KINDERGARTEN..6).freeze
+  # Program flags, in the order they are shown. Kept here so a flag reads the
+  # same on the check-in and check-out rows and in the admin roster.
+  FLAGS = [ [ "staff", "Staff" ], [ "prepaid_am", "Prepaid AM" ], [ "prepaid_pm", "Prepaid PM" ] ].freeze
 
   has_many :attendances, inverse_of: :student
 
@@ -67,6 +70,11 @@ class Student < ApplicationRecord
 
   def guardian_list=(value)
     self.guardians = value.to_s.split(",").map(&:strip).reject(&:blank?)
+  end
+
+  # Labels of the flags this student has, in FLAGS order.
+  def flag_labels
+    FLAGS.filter_map { |attribute, label| label if public_send(attribute) }
   end
 
   def hide!

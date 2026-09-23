@@ -8,9 +8,7 @@
       <div class="d-flex flex-wrap align-items-center gap-2">
         <span class="student-name fs-5 fw-semibold"><%= student.full_name %></span>
         <span class="badge text-bg-light">Grade <%= student.grade_label %></span>
-        <% if here_yesterday %>
-          <span class="badge text-bg-info">Here yesterday</span>
-        <% end %>
+        <%= render "shared/student_flags", student: student %>
       </div>
 
       <% if completed.any? %>
