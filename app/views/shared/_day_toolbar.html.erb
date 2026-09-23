@@ -35,9 +35,9 @@
     <%= text_field_tag :q, query, id: "#{route}_query", class: "form-control form-control-lg mb-3", placeholder: "Type a name", autocomplete: "off", enterkeyhint: "search", data: { roster_filter_target: "query", action: "input->roster-filter#submit", autofocus: (autofocus ? "true" : nil) } %>
     <div class="d-flex flex-wrap gap-2" role="group" aria-label="Grade">
       <%= button_tag "All", type: "button", aria: { pressed: grade.blank? }, class: "btn #{grade.blank? ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: "all" } %>
-      <% (1..6).each do |number| %>
+      <% Student.grade_options.each do |label, number| %>
         <% active = grade.to_s == number.to_s %>
-        <%= button_tag number, type: "button", aria: { pressed: active }, class: "btn #{active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: number } %>
+        <%= button_tag label, type: "button", aria: { pressed: active }, class: "btn #{active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: number } %>
       <% end %>
     </div>
   <% end %>

@@ -18,7 +18,7 @@
     </div>
     <div class="col-6 col-md-2">
       <%= form.label :grade, class: "form-label" %>
-      <%= form.select :grade, (1..6).to_a, { include_blank: "Grade" }, class: "form-select", required: true %>
+      <%= form.select :grade, Student.grade_options, { include_blank: "Grade" }, class: "form-select", required: true %>
     </div>
     <div class="col-6 col-md-2">
       <%= form.label :blackbaud_id, "Blackbaud ID", class: "form-label" %>

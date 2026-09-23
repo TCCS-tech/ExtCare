@@ -125,6 +125,38 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select ".student-name", text: "Nora Vance", count: 0
   end
 
+  test "kindergarten filters as its own level on check in" do
+    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
+    sign_in_as @staff
+
+    get checkins_path(grade: "0")
+    assert_select ".student-name", text: "Isla Thompson"
+    assert_select ".student-name", text: "Mia Alvarez", count: 0
+    assert_select ".attendance-row", text: /Grade K/
+    assert_select "button[data-roster-filter-grade-param='0']", text: "K"
+
+    get checkins_path(grade: "K")
+    assert_select ".student-name", text: "Isla Thompson"
+    assert_select ".student-name", text: "Mia Alvarez", count: 0
+
+    get checkins_path(grade: "all")
+    assert_select ".student-name", text: "Isla Thompson"
+    assert_select ".student-name", text: "Mia Alvarez"
+  end
+
+  test "kindergarten filters on check out" do
+    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
+    sign_in_as @staff
+    Attendance.check_in(student: kindergarten, by: @staff, day: Date.current)
+
+    get checkouts_path(grade: "1")
+    assert_select ".student-name", text: "Isla Thompson", count: 0
+
+    get checkouts_path(grade: "0")
+    assert_select ".student-name", text: "Isla Thompson"
+    assert_select ".attendance-row", text: /Grade K/
+  end
+
   test "checkout separates open and completed visits and keeps completion after refresh" do
     sign_in_as @staff
     travel_to Time.zone.local(2026, 9, 22, 16, 5, 0) do

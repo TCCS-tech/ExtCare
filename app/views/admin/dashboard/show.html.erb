@@ -40,7 +40,7 @@
               <% @attendances.each do |visit| %>
                 <tr>
                   <td><%= visit.student.full_name %></td>
-                  <td><%= visit.student.grade %></td>
+                  <td><%= visit.student.grade_label %></td>
                   <td><%= clock(visit.checkin) %></td>
                   <td><%= visit.checkout ? clock(visit.checkout) : "—" %></td>
                   <td><%= visit.recorded_by.email %></td>
@@ -107,7 +107,7 @@
                         <span class="badge text-bg-secondary">Removed</span>
                       <% end %>
                     </td>
-                    <td><%= student.grade %></td>
+                    <td><%= student.grade_label %></td>
                     <td><%= student.blackbaud_id %></td>
                     <td><%= student.guardian_list %></td>
                     <td class="text-end">

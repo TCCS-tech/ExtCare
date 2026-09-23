@@ -9,6 +9,9 @@ staff.role = :user
 staff.save!
 
 roster = [
+  [ "Amara", "Bell", 0, "Nia Bell", nil ],
+  [ "Theo", "Marsh", 0, "Dana Marsh", nil ],
+  [ "Zoe", "Sandoval", 0, "Marcia Sandoval", nil ],
   [ "Mia", "Alvarez", 1, "Ana Alvarez, Luis Alvarez", "BB1001" ],
   [ "Noah", "Bennett", 1, "Chris Bennett", nil ],
   [ "Ava", "Chen", 1, "Mei Chen", nil ],

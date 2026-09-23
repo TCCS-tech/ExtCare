@@ -5,6 +5,7 @@ class CheckinTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(1400, 1000)
     @zara = Student.create!(first_name: "Zara", last_name: "Quill", grade: 4)
     @owen = Student.create!(first_name: "Owen", last_name: "Moss", grade: 1)
+    @isla = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
   end
 
   test "staff checks students in and out from the lists" do
@@ -16,6 +17,14 @@ class CheckinTest < ApplicationSystemTestCase
     assert_text "Zara Quill"
     click_button "4"
     assert_text "Zara Quill"
+    assert_no_text "Owen Moss"
+
+    # Every filter click reloads the page. Wait for the grade 4 list to land so
+    # the next click cannot be dropped mid-navigation.
+    assert_selector "button.btn-primary[data-roster-filter-grade-param='4']"
+    click_button "K"
+    assert_text "Isla Thompson"
+    assert_no_text "Zara Quill"
     assert_no_text "Owen Moss"
     click_button "All"
     assert_text "Owen Moss"
