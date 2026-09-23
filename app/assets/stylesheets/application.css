@@ -561,10 +561,6 @@ main.container {
   position: relative;
 }
 
-.attendance-list .list-group-item:focus-within {
-  z-index: 1;
-}
-
 .attendance-feedback:not(:empty) {
   position: fixed;
   bottom: 1.25rem;
