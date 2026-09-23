@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#show"
-    resources :students, only: %i[ create edit update ]
+    resources :students, only: %i[ new create edit update ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

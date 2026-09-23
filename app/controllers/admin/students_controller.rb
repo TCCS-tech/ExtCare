@@ -4,9 +4,12 @@ class Admin::StudentsController < Admin::BaseController
     if @student.save
       redirect_to admin_root_path(filter_params), notice: "#{@student.full_name} added."
     else
-      load_dashboard
-      render "admin/dashboard/show", status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
+  end
+
+  def new
+    @student = Student.new
   end
 
   def edit
@@ -15,7 +18,7 @@ class Admin::StudentsController < Admin::BaseController
 
   def update
     @student = Student.find(params[:id])
-    attributes = params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :guardian_list, :hidden, :staff, :prepaid_am, :prepaid_pm ])
+    attributes = params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :student_id, :guardian_list, :hidden, :staff, :prepaid_am, :prepaid_pm ])
 
     if attributes.key?(:hidden)
       if ActiveModel::Type::Boolean.new.cast(attributes[:hidden])
@@ -37,7 +40,7 @@ class Admin::StudentsController < Admin::BaseController
 
   private
     def student_params
-      params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :guardian_list, :staff, :prepaid_am, :prepaid_pm ])
+      params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :student_id, :guardian_list, :staff, :prepaid_am, :prepaid_pm ])
     end
 
     def filter_params

@@ -60,7 +60,7 @@
     <h2 class="h4">Students</h2>
     <p class="text-body-secondary">Removing a student hides them from check-in and check-out. Their records stay.</p>
 
-    <%= render "admin/students/form", student: @student, filters: admin_filter_params %>
+    <%= link_to "Add Student", new_admin_student_path(admin_filter_params), class: "btn btn-primary mb-3" %>
 
     <%= form_with url: admin_root_path, method: :get, class: "mb-3", data: { controller: "roster-filter", turbo_action: "advance" } do %>
       <%= hidden_field_tag :day, @day %>
@@ -138,4 +138,3 @@
     </div>
   </div>
 </div>
-

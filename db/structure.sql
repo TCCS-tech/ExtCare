@@ -164,7 +164,8 @@ CREATE TABLE public.students (
     updated_at timestamp(6) with time zone NOT NULL,
     staff boolean DEFAULT false NOT NULL,
     prepaid_am boolean DEFAULT false NOT NULL,
-    prepaid_pm boolean DEFAULT false NOT NULL
+    prepaid_pm boolean DEFAULT false NOT NULL,
+    student_id text
 );
 
 
@@ -390,6 +391,7 @@ ALTER TABLE ONLY public.sessions
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260923160000'),
 ('20260923153334'),
 ('20260923012634'),
 ('20260923012633'),

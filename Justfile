@@ -20,3 +20,6 @@ server:
 # Run tests
 test:
     bin/rails test
+
+migrate:
+    bin/rails db:migrate

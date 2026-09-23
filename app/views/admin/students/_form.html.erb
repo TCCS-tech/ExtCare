@@ -20,9 +20,13 @@
       <%= form.label :grade, class: "form-label" %>
       <%= form.select :grade, Student.grade_options, { include_blank: "Grade" }, class: "form-select", required: true %>
     </div>
-    <div class="col-6 col-md-2">
+    <div class="col-6 col-md-3">
       <%= form.label :blackbaud_id, "Blackbaud ID", class: "form-label" %>
       <%= form.text_field :blackbaud_id, class: "form-control", autocomplete: "off" %>
+    </div>
+    <div class="col-6 col-md-3">
+      <%= form.label :student_id, "Student ID", class: "form-label" %>
+      <%= form.text_field :student_id, class: "form-control", autocomplete: "off" %>
     </div>
     <div class="col-12">
       <%= form.label :guardian_list, "Guardians", class: "form-label" %>
@@ -46,10 +50,7 @@
     </div>
     <div class="col-12">
       <%= form.submit(student.persisted? ? "Save changes" : "Add student", class: "btn btn-primary") %>
-      <% if student.persisted? %>
-        <%= link_to "Cancel", admin_root_path(filters), class: "btn btn-outline-secondary ms-2" %>
-      <% end %>
+      <%= link_to "Cancel", admin_root_path(filters), class: "btn btn-outline-secondary ms-2" %>
     </div>
   </div>
 <% end %>
-
