@@ -16,6 +16,7 @@ The goal of the app, is to allow parents to quickly and easily check in and out 
 The app should support login with email/password to start, next version will allow signing in with Google. There are 2 roles, Admin and User. Only Admin role can access the Admin Page.
 
 ### DB Schema
+```sql
 -- Pin the database to Pacific (with DST). Reconnect after this.
 -- ALTER DATABASE your_db SET timezone TO 'America/Los_Angeles';
 
@@ -95,7 +96,7 @@ CREATE TRIGGER attendance_enforce_visit_rules
   ON attendance
   FOR EACH ROW
   EXECUTE FUNCTION attendance_enforce_visit_rules();
-
+```
 
 ## Front End
 Main use case is running on a laptop, but app should also be Mobile Friendly. A User will log in to the app, and see a splash page, with a top bar hamburger menu with navigation to the various pages.

@@ -1,42 +1,60 @@
-<% content_for :title, "AfterCare" %>
+<% content_for :title, "AfterCare | Tri-City Christian School" %>
+<% content_for :body_class, "home-page" %>
 
-<div class="text-center py-3">
-  <h1 class="display-6 fw-semibold">AfterCare</h1>
-  <p class="lead mb-1">Check students in and out.</p>
-  <p class="text-body-secondary mb-0"><%= l(Date.current, format: :long_day) %></p>
-</div>
-
-<div class="row g-3 justify-content-center mt-2">
-  <div class="col-12 col-md-6 col-xl-4">
-    <%= link_to checkins_path, class: "card h-100 text-decoration-none shadow-sm" do %>
-      <div class="card-body p-4">
-        <h2 class="h3 text-body">Check in</h2>
-        <p class="mb-0 text-body-secondary">Find a student and mark them here.</p>
-      </div>
-    <% end %>
-  </div>
-  <div class="col-12 col-md-6 col-xl-4">
-    <%= link_to checkouts_path, class: "card h-100 text-decoration-none shadow-sm" do %>
-      <div class="card-body p-4">
-        <h2 class="h3 text-body">Check out</h2>
-        <p class="mb-0 text-body-secondary">
-          <% if @open_count.positive? %>
-            <%= pluralize(@open_count, "student") %> still here.
-          <% else %>
-            Everyone is checked out.
-          <% end %>
-        </p>
-      </div>
-    <% end %>
-  </div>
-  <% if Current.user.admin? %>
-    <div class="col-12 col-md-6 col-xl-4">
-      <%= link_to admin_root_path, class: "card h-100 text-decoration-none shadow-sm" do %>
-        <div class="card-body p-4">
-          <h2 class="h3 text-body">Admin</h2>
-          <p class="mb-0 text-body-secondary">Students and the day's check-ins.</p>
-        </div>
-      <% end %>
+<div class="home-dashboard">
+  <section class="home-welcome" aria-labelledby="welcome-heading">
+    <div class="home-welcome-copy">
+      <p class="home-eyebrow">TRI-CITY CHRISTIAN SCHOOL</p>
+      <h1 id="welcome-heading">Welcome to<br>AfterCare<span>.</span></h1>
+      <p class="home-intro">A great school day deserves a great finish.</p>
+      <p class="home-date"><time datetime="<%= Date.current.iso8601 %>"><%= l(Date.current, format: :long_day) %></time></p>
     </div>
+    <div class="home-school-mark">
+      <%= image_tag "tccs-logo.png", alt: "Tri-City Christian School", width: 361, height: 284, class: "home-logo" %>
+    </div>
+  </section>
+
+  <section class="home-actions" aria-labelledby="actions-heading">
+    <div class="home-section-heading">
+      <div>
+        <p class="home-eyebrow">LET’S GET STARTED</p>
+        <h2 id="actions-heading">Here for the afternoon.</h2>
+      </div>
+      <p>Choose an action to manage student attendance.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-md-6">
+        <%= link_to checkins_path, class: "home-action home-action-checkin" do %>
+          <span class="home-action-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h5v16h-5M3 12h11m-4-4 4 4-4 4" /></svg>
+          </span>
+          <h3>Check in</h3>
+          <p>Find a student and welcome them in for the afternoon.</p>
+          <span class="home-action-footer">Find students <span aria-hidden="true">↗</span></span>
+        <% end %>
+      </div>
+      <div class="col-12 col-md-6">
+        <%= link_to checkouts_path, class: "home-action home-action-checkout" do %>
+          <span class="home-action-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H5v16h5m0-8h11m-4-4 4 4-4 4" /></svg>
+          </span>
+          <h3>Check out</h3>
+          <p>Ready to head home? Record a student’s pickup.</p>
+          <span class="home-action-footer">
+            <span class="home-attendance"><span class="home-status-dot" aria-hidden="true"></span><%= @open_count.positive? ? "#{pluralize(@open_count, 'student')} still here" : "Everyone is checked out" %></span>
+            <span aria-hidden="true">↗</span>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <% if Current.user.admin? %>
+    <%= link_to admin_root_path, class: "home-admin" do %>
+      <span><strong>Admin</strong><span class="home-admin-description">Manage students and review the day’s check-ins.</span></span>
+      <span aria-hidden="true">→</span>
+    <% end %>
   <% end %>
+  <p class="home-footer">Tri-City Christian School <span aria-hidden="true">·</span> AfterCare</p>
 </div>

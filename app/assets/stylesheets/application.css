@@ -19,3 +19,266 @@ body {
     width: 100%;
   }
 }
+
+/* The home page takes its colors from the school crest. */
+.home-page {
+  --home-navy: #202d4c;
+  --home-burgundy: #a5003b;
+  --home-muted: #626b7b;
+  background: #f5f4f1 !important;
+  color: var(--home-navy);
+}
+
+.home-page .navbar {
+  background: var(--home-navy) !important;
+  border-bottom: 1px solid #ffffff24;
+}
+
+.home-page main {
+  padding-top: 2rem !important;
+}
+
+.home-dashboard {
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.home-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  padding: 3.5rem 4rem;
+  border-radius: 1.5rem;
+  color: #fff;
+  background: radial-gradient(ellipse at top right, #394665, transparent 65%), var(--home-navy);
+  box-shadow: 0 12px 30px #202d4c12;
+  overflow: hidden;
+}
+
+.home-eyebrow {
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.home-welcome .home-eyebrow {
+  color: #c8cfde;
+}
+
+.home-welcome h1 {
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  margin-bottom: 1.25rem;
+}
+
+.home-welcome h1 > span {
+  color: #eea7bc;
+}
+
+.home-intro {
+  color: #dde1eb;
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-date {
+  display: inline-block;
+  margin: 0;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #ffffff30;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  color: #e3e7f0;
+}
+
+.home-school-mark {
+  flex: 0 0 250px;
+  padding-left: 2rem;
+  border-left: 1px solid #ffffff26;
+}
+
+.home-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.home-actions {
+  margin-top: 2.5rem;
+}
+
+.home-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.home-section-heading .home-eyebrow {
+  color: var(--home-burgundy);
+  margin-bottom: 0.5rem;
+}
+
+.home-section-heading h2 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.home-section-heading > p {
+  color: var(--home-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.15rem;
+}
+
+.home-action {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.75rem 2rem;
+  border: 1px solid #dedfe4;
+  border-radius: 1rem;
+  background: #fff;
+  color: var(--home-navy);
+  text-decoration: none;
+  box-shadow: 0 3px 8px #202d4c04;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.home-action:hover {
+  color: var(--home-navy);
+  border-color: var(--home-navy);
+  box-shadow: 0 8px 22px #202d4c10;
+  transform: translateY(-3px);
+}
+
+.home-action:focus-visible,
+.home-admin:focus-visible {
+  outline: 3px solid var(--home-burgundy);
+  outline-offset: 4px;
+}
+
+.home-action-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.8rem;
+  background: #f8eaf0;
+  color: var(--home-burgundy);
+  margin-bottom: 1.25rem;
+}
+
+.home-action-icon svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.home-action-checkout .home-action-icon {
+  background: #edf0f6;
+  color: var(--home-navy);
+}
+
+.home-action h3 {
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.home-action > p {
+  color: var(--home-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.75rem;
+}
+
+.home-action-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  margin-top: auto;
+  border-top: 1px solid #edf0f3;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.home-action-checkin .home-action-footer {
+  color: var(--home-burgundy);
+}
+
+.home-action-footer > span:last-child:not(.home-attendance) {
+  font-size: 1.35rem;
+}
+
+.home-attendance {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.home-status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #527b68;
+  flex-shrink: 0;
+}
+
+.home-admin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.5rem;
+  border: 1px solid #dedfe4;
+  border-radius: 0.75rem;
+  color: var(--home-navy);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.home-admin:hover {
+  color: var(--home-navy);
+  background: #fff;
+}
+
+.home-admin-description {
+  margin-left: 1.25rem;
+  color: var(--home-muted);
+}
+
+.home-footer {
+  margin: 1.75rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--home-muted);
+}
+
+.home-footer > span {
+  margin-inline: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .home-page main { padding-top: 1rem !important; }
+  .home-welcome { padding: 2rem; gap: 2rem; flex-direction: column-reverse; align-items: start; }
+  .home-school-mark { flex-basis: auto; width: 130px; padding: 0; border: 0; }
+  .home-section-heading { display: block; }
+  .home-section-heading > p { margin-top: 0.75rem; }
+  .home-actions { margin-top: 2rem; }
+  .home-action { padding: 1.5rem; }
+  .home-admin-description { display: block; margin: 0.25rem 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-action { transition: none; }
+  .home-action:hover { transform: none; }
+}

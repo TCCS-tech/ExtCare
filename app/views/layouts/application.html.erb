@@ -19,7 +19,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-body-tertiary">
+  <body class="bg-body-tertiary <%= content_for(:body_class) %>">
     <% if authenticated? %>
       <%= render "shared/navbar" %>
     <% else %>
