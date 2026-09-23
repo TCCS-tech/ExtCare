@@ -158,14 +158,14 @@ CREATE TABLE public.students (
     last_name text NOT NULL,
     grade integer NOT NULL,
     blackbaud_id text,
+    student_id text,
     guardians text[] DEFAULT '{}'::text[] NOT NULL,
-    hidden boolean DEFAULT false NOT NULL,
-    created_at timestamp(6) with time zone NOT NULL,
-    updated_at timestamp(6) with time zone NOT NULL,
     staff boolean DEFAULT false NOT NULL,
     prepaid_am boolean DEFAULT false NOT NULL,
     prepaid_pm boolean DEFAULT false NOT NULL,
-    student_id text
+    hidden boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL
 );
 
 
@@ -305,6 +305,13 @@ CREATE UNIQUE INDEX attendance_one_open_per_student ON public.attendance USING b
 
 
 --
+-- Name: idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_on_blackbaud_id_student_id_first_name_last_name_cd1acb25c8 ON public.students USING btree (blackbaud_id, student_id, first_name, last_name);
+
+
+--
 -- Name: index_attendance_on_checkin_by; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -333,10 +340,24 @@ CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
 
 
 --
--- Name: index_students_on_blackbaud_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_students_on_first_name; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_students_on_blackbaud_id ON public.students USING btree (blackbaud_id);
+CREATE INDEX index_students_on_first_name ON public.students USING btree (first_name);
+
+
+--
+-- Name: index_students_on_grade; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_students_on_grade ON public.students USING btree (grade);
+
+
+--
+-- Name: index_students_on_last_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_students_on_last_name ON public.students USING btree (last_name);
 
 
 --
@@ -344,13 +365,6 @@ CREATE UNIQUE INDEX index_students_on_blackbaud_id ON public.students USING btre
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
-
-
---
--- Name: students_name_key; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX students_name_key ON public.students USING btree (first_name, last_name);
 
 
 --
@@ -391,8 +405,6 @@ ALTER TABLE ONLY public.sessions
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20260923160000'),
-('20260923153334'),
 ('20260923012634'),
 ('20260923012633'),
 ('20260923012632'),

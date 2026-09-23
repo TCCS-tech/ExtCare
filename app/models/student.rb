@@ -14,8 +14,7 @@ class Student < ApplicationRecord
 
   validates :first_name, :last_name, presence: true
   validates :grade, inclusion: { in: GRADES }
-  validates :blackbaud_id, uniqueness: true, allow_nil: true
-  validates :first_name, uniqueness: { scope: :last_name, message: "and last name are already used by another student" }
+  validates :student_id, uniqueness: true, allow_nil: true
 
   scope :visible, -> { where(hidden: false) }
   # Grade filters arrive as URL strings: "0" and "K" are Kindergarten, and

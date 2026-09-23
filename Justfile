@@ -23,3 +23,6 @@ test:
 
 migrate:
     bin/rails db:migrate
+
+reset-db:
+    bin/rails db:reset
