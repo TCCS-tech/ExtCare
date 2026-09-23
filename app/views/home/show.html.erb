@@ -1,11 +1,11 @@
-<% content_for :title, "AfterCare | Tri-City Christian School" %>
+<% content_for :title, "ExtendedCare | Tri-City Christian School" %>
 <% content_for :body_class, "home-page" %>
 
 <div class="home-dashboard">
   <section class="home-welcome" aria-labelledby="welcome-heading">
     <div class="home-welcome-copy">
       <p class="home-eyebrow">TRI-CITY CHRISTIAN SCHOOL</p>
-      <h1 id="welcome-heading">Welcome to<br>AfterCare<span>.</span></h1>
+      <h1 id="welcome-heading">Welcome to<br>ExtendedCare<span>.</span></h1>
       <p class="home-intro">A great school day deserves a great finish.</p>
       <p class="home-date"><time datetime="<%= Date.current.iso8601 %>"><%= l(Date.current, format: :long_day) %></time></p>
     </div>
@@ -56,5 +56,5 @@
       <span aria-hidden="true">→</span>
     <% end %>
   <% end %>
-  <p class="home-footer"><%= link_to "Tri-City Christian School", "https://tccs.org", target: "_blank", rel: "noopener" %> <span aria-hidden="true">·</span> AfterCare</p>
+  <p class="home-footer"><%= link_to "Tri-City Christian School", "https://tccs.org", target: "_blank", rel: "noopener" %> <span aria-hidden="true">·</span> ExtendedCare</p>
 </div>

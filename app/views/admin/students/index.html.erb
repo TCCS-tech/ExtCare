@@ -44,7 +44,7 @@
     <div class="student-search-empty">
       <h2 class="h5">No students match “<%= @student_q %>”</h2>
       <p class="text-body-secondary mb-0">Try a different spelling or part of their name<%= @show_hidden ? "." : ", or include removed students." %></p>
-      <p class="mt-3 mb-0">New to AfterCare? <%= link_to "Add a new student", new_admin_student_path(admin_filter_params) %></p>
+      <p class="mt-3 mb-0">New to ExtendedCare? <%= link_to "Add a new student", new_admin_student_path(admin_filter_params) %></p>
     </div>
   <% else %>
     <div class="student-results-heading">

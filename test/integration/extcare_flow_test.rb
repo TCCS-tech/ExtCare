@@ -1,6 +1,6 @@
 require "test_helper"
 
-class AftercareFlowTest < ActionDispatch::IntegrationTest
+class ExtcareFlowTest < ActionDispatch::IntegrationTest
   setup do
     @staff = users(:staff)
     @admin = users(:admin)

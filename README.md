@@ -1,4 +1,4 @@
-# AfterCare
+# ExtendedCare
 
 Parents and staff check students in and out of the after school program. Times are stored in Pacific time (`America/Los_Angeles`).
 

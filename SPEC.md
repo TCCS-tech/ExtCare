@@ -1,4 +1,4 @@
-# AfterCare -- A Student Checkin CheckOut App
+# ExtendedCare -- A Student Checkin CheckOut App
 
 ## Tech Stack
 * Rails 8.1.3.1, Propshaft, importmaps, Hotwire on, no build step

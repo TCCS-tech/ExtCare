@@ -11,14 +11,14 @@ default: &default
 
 development:
   <<: *default
-  database: tccs_aftercare_development
+  database: tccs_extcare_development
 
 test:
   <<: *default
-  database: tccs_aftercare_test
+  database: tccs_extcare_test
 
 production:
   <<: *default
-  database: tccs_aftercare_production
-  username: tccs_aftercare
-  password: <%= ENV["TCCS_AFTERCARE_DATABASE_PASSWORD"] %>
+  database: tccs_extcare_production
+  username: tccs_extcare
+  password: <%= ENV["EXTCARE_DATABASE_PASSWORD"] %>
