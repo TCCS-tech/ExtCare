@@ -240,6 +240,18 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select "#student-results", text: /No students match/
   end
 
+  test "attendance switch preserves filters in both directions" do
+    sign_in_as @staff
+    filters = { day: "2026-09-21", grade: "2", q: "Liam" }
+    get checkins_path(filters)
+    assert_select ".attendance-switch a[aria-current='page']", text: "Check in"
+    assert_select ".attendance-switch a[href=?]", checkouts_path(filters), text: "Check out"
+
+    get checkouts_path(filters)
+    assert_select ".attendance-switch a[aria-current='page']", text: "Check out"
+    assert_select ".attendance-switch a[href=?]", checkins_path(filters), text: "Check in"
+  end
+
   private
     def clock_text(time)
       I18n.l(time, format: :check)

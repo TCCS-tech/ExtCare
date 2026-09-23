@@ -574,3 +574,37 @@ main.container {
 .attendance-row {
   padding-block: 1rem;
 }
+
+.attendance-switch {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  background: #edf0f6;
+}
+
+.attendance-switch-link {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--school-navy);
+  font-weight: 600;
+}
+
+.attendance-switch-link:hover {
+  background: #e0e5ef;
+  color: var(--school-navy);
+}
+
+.attendance-switch-link[aria-current="page"] {
+  background: var(--school-navy);
+  color: #fff;
+  box-shadow: 0 2px 4px #202d4c15;
+}
+
+.attendance-switch-link:focus-visible {
+  outline: 3px solid var(--school-burgundy);
+  outline-offset: 2px;
+}

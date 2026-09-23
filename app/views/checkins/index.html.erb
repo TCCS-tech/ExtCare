@@ -1,5 +1,5 @@
 <% content_for :title, "Check in" %>
-<%= render "shared/page_heading", title: "Check in", description: "Find a student and welcome them in for the afternoon.", eyebrow: "STUDENT ATTENDANCE" %>
+<%= render "shared/page_heading", title: "Check in", description: "Find a student and welcome them in.", eyebrow: "STUDENT ATTENDANCE" %>
 
 <%= render "shared/day_toolbar", route: :checkins_path, day: @day, grade: @grade, query: @q, autofocus: true %>
 

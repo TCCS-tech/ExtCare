@@ -1,5 +1,11 @@
 <%# locals: (route:, day:, grade:, query:, autofocus: false) %>
 <div class="day-toolbar mb-3">
+  <div class="attendance-switch mb-3" role="navigation" aria-label="Attendance pages">
+    <%= link_to "Check in", checkins_path(day: day, grade: grade.presence, q: query.presence),
+          class: "attendance-switch-link", aria: { current: ("page" if route == :checkins_path) } %>
+    <%= link_to "Check out", checkouts_path(day: day, grade: grade.presence, q: query.presence),
+          class: "attendance-switch-link", aria: { current: ("page" if route == :checkouts_path) } %>
+  </div>
   <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
     <%= link_to public_send(route, day: day - 1, grade: grade.presence, q: query.presence), class: "btn btn-outline-secondary btn-lg px-3", aria: { label: "Previous day" } do %>
       <span aria-hidden="true">&lsaquo;</span>
