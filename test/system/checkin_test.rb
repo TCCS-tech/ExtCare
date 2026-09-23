@@ -71,6 +71,7 @@ class CheckinTest < ApplicationSystemTestCase
     ada = Student.find_by!(last_name: "Lovelace")
     assert_equal [ "Ann Lovelace", "Charles Lovelace" ], ada.guardians
 
+    fill_in "Search students", with: "Lovelace"
     within("tr", text: "Ada Lovelace") { click_link "Edit" }
     assert_field "First name", with: "Ada"
     fill_in "First name", with: "Augusta"
@@ -120,6 +121,33 @@ class CheckinTest < ApplicationSystemTestCase
       assert_selector "#checkout-completed #checkout_attendance_#{visit_id}"
     end
     assert_equal [ "Owen Moss", "Zara Quill" ], all("#checkout-completed .student-name").map(&:text)
+  end
+
+  test "admin checkin search preserves scroll and input focus" do
+    10.times do |index|
+      time = Time.current - (30 - index * 2).minutes
+      Attendance.create!(student: @owen, day: Date.current, checkin: time,
+        checkout: time + 1.minute, checkin_by: users(:staff).id, checkout_by: users(:staff).email)
+    end
+    Attendance.check_in(student: @zara, by: users(:staff), day: Date.current)
+    sign_in users(:admin)
+    assert_button "Log out"
+    visit admin_root_path
+    page.driver.browser.manage.window.resize_to(1000, 650)
+    input = find("#attendance_q")
+    page.execute_script("arguments[0].scrollIntoView({block: 'center'})", input)
+    input.click
+    scroll = page.evaluate_script("window.scrollY")
+    assert_operator scroll, :>, 0
+
+    fill_in "Search check-ins", with: "Owen"
+    within "#admin-checkin-results" do
+      assert_no_text "Zara Quill"
+      assert_text "Owen Moss"
+    end
+    assert_in_delta scroll, page.evaluate_script("window.scrollY"), 2
+    assert_equal "attendance_q", page.evaluate_script("document.activeElement.id")
+    assert_field "Search check-ins", with: "Owen"
   end
 
   private

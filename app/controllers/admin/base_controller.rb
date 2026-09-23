@@ -13,7 +13,7 @@ class Admin::BaseController < ApplicationController
       @show_hidden = params[:show_hidden] == "1"
       @focus = params[:focus].to_s
       @student ||= Student.new
-      students = Student.named(@student_q).ordered_by_name
+      students = @student_q.blank? ? Student.none : Student.named(@student_q).ordered_by_name
       students = students.visible unless @show_hidden
       @students = students
       @attendances = Attendance.on(@day)

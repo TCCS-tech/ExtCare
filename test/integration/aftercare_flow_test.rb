@@ -216,8 +216,28 @@ class AftercareFlowTest < ActionDispatch::IntegrationTest
     assert_select "#checkout-completed .student-name" do |names|
       assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)
     end
-    get admin_root_path
-    assert_operator response.body.index("Liam Diaz"), :<, response.body.index("Mia Alvarez")
+    get admin_root_path(student_q: "a")
+    assert_select "#student-results tbody tr" do |rows|
+      assert_match /Liam Diaz/, rows.first.text
+      assert_match /Mia Alvarez/, rows[1].text
+    end
+  end
+
+  test "admin student results require a nonblank search even when showing removed students" do
+    sign_in_as @admin
+    [ nil, "", "   " ].each do |query|
+      get admin_root_path(student_q: query, show_hidden: "1")
+      assert_response :success
+      assert_select "#student-results table", count: 0
+      assert_select "#student-results", text: /Type a student’s name/
+    end
+
+    get admin_root_path(student_q: "mia")
+    assert_select "#student-results td", text: "Mia Alvarez"
+    assert_select "#student-results td", text: "Noah Bennett", count: 0
+
+    get admin_root_path(student_q: "no-such-student")
+    assert_select "#student-results", text: /No students match/
   end
 
   private
