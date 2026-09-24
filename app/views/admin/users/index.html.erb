@@ -1,0 +1,59 @@
+<% content_for :title, "Users" %>
+<%= render "shared/page_heading", title: "Users", description: "Add staff accounts and update account passwords.", eyebrow: "SCHOOL OFFICE" %>
+<p class="mb-3"><%= link_to "Admin home", admin_root_path %></p>
+
+<div class="card card-body shadow-sm mb-4">
+  <h2 class="h4">Add a user</h2>
+  <% if @new_user.errors.any? %>
+    <div class="alert alert-danger"><%= @new_user.errors.full_messages.to_sentence %></div>
+  <% end %>
+  <%= form_with model: @new_user, url: admin_users_path do |form| %>
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <%= form.label :email, class: "form-label" %>
+        <%= form.email_field :email, class: "form-control", required: true, autocomplete: "username" %>
+      </div>
+      <div class="col-12 col-md-3">
+        <%= form.label :password, class: "form-label" %>
+        <%= form.password_field :password, class: "form-control", required: true, maxlength: 72, autocomplete: "new-password" %>
+      </div>
+      <div class="col-12 col-md-3">
+        <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>
+        <%= form.password_field :password_confirmation, class: "form-control", required: true, maxlength: 72, autocomplete: "new-password" %>
+      </div>
+      <div class="col-12 col-md-2">
+        <%= form.label :role, class: "form-label" %>
+        <%= form.select :role, User.roles.keys.map { |role| [ role.titleize, role ] }, {}, class: "form-select" %>
+      </div>
+      <div class="col-12"><%= form.submit "Add user", class: "btn btn-primary" %></div>
+    </div>
+  <% end %>
+</div>
+
+<h2 class="h4">Existing users</h2>
+<div class="d-grid gap-3">
+  <% @users.each do |user| %>
+    <section class="card card-body shadow-sm">
+      <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+        <h3 class="h5 mb-0"><%= user.email %></h3>
+        <span class="badge text-bg-secondary"><%= user.role %></span>
+      </div>
+      <% if @user&.id == user.id && @user.errors.any? %>
+        <div class="alert alert-danger"><%= @user.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <%= form_with model: user, url: admin_user_path(user), method: :patch do |form| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-4">
+            <%= form.label :password, "New password", class: "form-label" %>
+            <%= form.password_field :password, class: "form-control", required: true, maxlength: 72, autocomplete: "new-password" %>
+          </div>
+          <div class="col-12 col-md-4">
+            <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>
+            <%= form.password_field :password_confirmation, class: "form-control", required: true, maxlength: 72, autocomplete: "new-password" %>
+          </div>
+          <div class="col-12 col-md-4"><%= form.submit "Update password", class: "btn btn-outline-primary" %></div>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</div>

@@ -5,4 +5,6 @@ class User < ApplicationRecord
   enum :role, { admin: "Admin", user: "User" }, default: :user, validate: true
 
   normalizes :email, with: ->(email) { email.strip.downcase }
+
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
 end
