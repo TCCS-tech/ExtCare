@@ -10,8 +10,11 @@ class CheckoutsController < ApplicationController
       .merge(Student.ordered_by_name)
       .order(:checkin, :id)
       .to_a
-    matching_student_ids = Student.named(@q).in_grade(@grade).pluck(:id).to_set
-    @ready_visits = all_visits.select { |visit| visit.open? && matching_student_ids.include?(visit.student_id) }
+    @ready_visits = all_visits.select(&:open?)
+    if @q.present?
+      matching_student_ids = Student.named(@q).in_grade(@grade).pluck(:id).to_set
+      @ready_visits.select! { |visit| matching_student_ids.include?(visit.student_id) }
+    end
     @checked_out_visits = all_visits.reject(&:open?)
     @other_open_days = Attendance.open.where.not(day: @day).distinct.order(:day).pluck(:day)
   end

@@ -17,6 +17,7 @@ class CheckinsController < ApplicationController
     @open_visits = Attendance.open.where(student_id: ids).index_by(&:student_id)
     @ready_students = @students.reject { |student| @open_visits.key?(student.id) }
     @yesterday_ids = Attendance.on(@day - 1).where(student_id: ids).distinct.pluck(:student_id).to_set
+    @other_open_days = Attendance.open.where.not(day: @day).distinct.order(:day).pluck(:day)
   end
 
   def create

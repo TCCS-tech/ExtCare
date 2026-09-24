@@ -20,7 +20,8 @@ body {
 .pickup-details-button {
   display: grid;
   place-items: center;
-  width: 3.5rem;
+  flex: 0 0 3.5rem;
+  width: 3.5rem !important;
   min-width: 3.5rem !important;
   height: 3.5rem;
   padding: 0;
@@ -31,6 +32,14 @@ body {
 @media (max-width: 575.98px) {
   .list-group .btn-lg {
     width: 100%;
+  }
+
+  .checkout-actions {
+    align-self: flex-end;
+  }
+
+  .checkout-submit-button {
+    width: auto !important;
   }
 }
 
@@ -529,12 +538,13 @@ main.container {
 @media (max-width: 575.98px) {
   .day-toolbar [role="group"] {
     display: grid !important;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 0.35rem !important;
   }
   .day-toolbar [role="group"] .btn {
     min-width: 0;
-    padding-inline: 0.25rem;
+    padding-inline: 0.1rem;
+    font-size: 0.8rem;
   }
 }
 

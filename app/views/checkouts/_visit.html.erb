@@ -12,13 +12,13 @@
       </div>
       <div class="small text-body-secondary mt-1">In at <%= clock(visit.checkin) %></div>
     </div>
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center justify-content-end gap-2 checkout-actions">
       <% if visit.checkout %>
         <span class="fs-4 fw-semibold text-nowrap"><%= clock(visit.checkout) %></span>
       <% else %>
         <%= button_to "Check out", checkouts_path,
               params: { attendance_id: visit.id, day: day, grade: grade, q: query, checkout_time: (day < Date.current ? "15:00" : nil) },
-              class: "btn btn-primary btn-lg",
+              class: "btn btn-primary btn-lg checkout-submit-button",
               form: { class: "m-0" } %>
         <button type="button" class="btn btn-outline-secondary btn-lg pickup-details-button" data-bs-toggle="modal" data-bs-target="#pickup-modal-<%= visit.id %>" aria-label="Add pickup name for <%= visit.student.full_name %>" title="Add pickup name">
           <span aria-hidden="true">…</span>
@@ -39,6 +39,18 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+              <% if visit.student.guardians.any? %>
+                <div class="mb-3">
+                  <div class="form-label mb-1">Guardians</div>
+                  <div><%= visit.student.guardian_list %></div>
+                </div>
+              <% end %>
+              <% if visit.student.notes.present? %>
+                <div class="mb-3">
+                  <div class="form-label mb-1">Student notes</div>
+                  <%= simple_format(visit.student.notes, class: "mb-0") %>
+                </div>
+              <% end %>
               <%= form.label :pickup_notes, "Pickup Notes", class: "form-label" %>
               <%= form.text_field :pickup_notes, class: "form-control", autocomplete: "name", placeholder: "Enter a name or a note", maxlength: 255 %>
               <div class="form-text">Optional. You can still check out without adding a name.</div>

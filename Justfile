@@ -15,7 +15,7 @@ down:
 
 # Run the web server
 server:
-    bin/rails server
+    bin/rails server --binding 0.0.0.0
 
 # Run tests
 test:
