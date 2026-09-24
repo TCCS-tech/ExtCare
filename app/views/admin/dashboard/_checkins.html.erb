@@ -27,7 +27,7 @@
               <th>Check in</th>
               <th>Check out</th>
               <th>Checked in by</th>
-              <th>Picked up by</th>
+              <th>Pickup notes</th>
               <th><span class="visually-hidden">Actions</span></th>
             </tr>
           </thead>
@@ -44,9 +44,12 @@
                   <td><%= visit.recorded_by.email %></td>
                   <td><%= visit.pickup_notes.presence || "—" %></td>
                   <td class="text-end">
-                    <%= button_to admin_checkin_path(visit, day: @day, attendance_q: @attendance_q, student_q: @student_q, show_hidden: ("1" if @show_hidden)), method: :delete, class: "btn btn-sm btn-outline-danger", aria: { label: "Delete check-in for #{visit.student.full_name}" }, title: "Delete check-in", data: { turbo_confirm: "Delete this check-in for #{visit.student.full_name}?" } do %>
+                    <div class="d-inline-flex align-items-center gap-2">
+                      <%= link_to "Edit", edit_admin_checkin_path(visit, day: @day, attendance_q: @attendance_q), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "_top" } %>
+                      <%= button_to admin_checkin_path(visit, day: @day, attendance_q: @attendance_q, student_q: @student_q, show_hidden: ("1" if @show_hidden)), method: :delete, class: "btn btn-sm btn-outline-danger", form: { class: "m-0" }, aria: { label: "Delete check-in for #{visit.student.full_name}" }, title: "Delete check-in", data: { turbo_confirm: "Delete this check-in for #{visit.student.full_name}?" } do %>
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h2l.707-.707A1 1 0 0 1 12.414 2H13.5a1 1 0 0 1 1 1M4 4v9a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4zM6.5 3l-.5-.5h-2A.5.5 0 0 0 4 3zM8 3h2.5l.5-.5h-2z"/></svg>
                     <% end %>
+                    </div>
                   </td>
                 </tr>
               <% end %>

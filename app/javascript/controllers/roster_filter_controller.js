@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "query", "grade", "focus" ]
+  static targets = [ "query", "grade", "focus", "clearButton" ]
 
   connect() {
     if (!this.hasQueryTarget || this.queryTarget.dataset.autofocus !== "true") return
@@ -16,7 +16,22 @@ export default class extends Controller {
   submit(event) {
     clearTimeout(this.timer)
     const field = event.target
+    this.updateClearButton()
     this.timer = setTimeout(() => this.submitField(field), 200)
+  }
+
+  clearOnEscape(event) {
+    if (event.key !== "Escape" || this.queryTarget.value.length === 0) return
+
+    event.preventDefault()
+    this.clearQuery()
+  }
+
+  clearQuery() {
+    clearTimeout(this.timer)
+    this.queryTarget.value = ""
+    this.updateClearButton()
+    this.submitField(this.queryTarget)
   }
 
   submitNow(event) {
@@ -37,5 +52,9 @@ export default class extends Controller {
   submitField(field) {
     if (this.hasFocusTarget && field?.name) this.focusTarget.value = field.name
     this.element.requestSubmit()
+  }
+
+  updateClearButton() {
+    if (this.hasClearButtonTarget) this.clearButtonTarget.hidden = this.queryTarget.value.length === 0
   }
 }

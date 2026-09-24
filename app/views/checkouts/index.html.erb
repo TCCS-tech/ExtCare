@@ -1,6 +1,7 @@
 <% content_for :title, "Check out" %>
 <%= render "shared/page_heading", title: "Check out", description: "Ready to head home? Record a student’s pickup.", eyebrow: "STUDENT ATTENDANCE" %>
 
+<div data-controller="attendance-lists checkin-time" data-action="turbo:before-cache@document->attendance-lists#finishTransitions submit->checkin-time#submit">
 <%= render "shared/day_toolbar", route: :checkouts_path, day: @day, grade: @grade, query: @q, autofocus: true %>
 
 <% if @other_open_days.any? %>
@@ -12,7 +13,6 @@
   </div>
 <% end %>
 
-<div data-controller="attendance-lists" data-action="turbo:before-cache@document->attendance-lists#finishTransitions">
   <% [["ready", "Ready to check out", @ready_visits, "No students are waiting to check out."],
       ["completed", "Already checked out", @checked_out_visits, "No students checked out yet."]].each do |key, title, visits, empty_message| %>
     <section class="attendance-section" aria-labelledby="checkout-<%= key %>-heading">

@@ -1,0 +1,46 @@
+<% content_for :title, "Edit check-in" %>
+<%= render "shared/page_heading", title: "Edit check-in", description: "Update this attendance record.", eyebrow: "ADMIN" %>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3"><%= @attendance.student.full_name %></h2>
+    <% if @attendance.errors.any? %>
+      <div class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+          <% @attendance.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @attendance, url: admin_checkin_path(@attendance), method: :patch do |form| %>
+      <%= hidden_field_tag :day, params[:day] %>
+      <%= hidden_field_tag :attendance_q, params[:attendance_q] %>
+      <div class="mb-3">
+        <%= form.label :day, "Day", class: "form-label" %>
+        <%= form.date_field :day, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :checkin, "Check in", class: "form-label" %>
+        <%= form.datetime_local_field :checkin, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :checkout, "Check out", class: "form-label" %>
+        <%= form.datetime_local_field :checkout, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :checkin_by, "Checked in by", class: "form-label" %>
+        <%= form.collection_select :checkin_by, @users, :id, :email, {}, class: "form-select" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :pickup_notes, "Pickup Notes", class: "form-label" %>
+        <%= form.text_field :pickup_notes, class: "form-control", maxlength: 255 %>
+      </div>
+      <div class="d-flex gap-2">
+        <%= form.submit "Save changes", class: "btn btn-primary" %>
+        <%= link_to "Cancel", admin_checkins_path(day: params[:day] || @attendance.day, attendance_q: params[:attendance_q]), class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

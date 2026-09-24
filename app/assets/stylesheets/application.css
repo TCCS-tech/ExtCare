@@ -3,7 +3,7 @@ body {
 }
 
 .day-toolbar {
-  position: sticky;
+  /*position: sticky;*/
   top: 3.5rem;
   z-index: 1010;
   background: #fff;

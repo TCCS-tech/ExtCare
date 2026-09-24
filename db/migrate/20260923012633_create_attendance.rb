@@ -19,7 +19,7 @@ class CreateAttendance < ActiveRecord::Migration[8.1]
       name: "attendance_one_open_per_student"
 
     add_check_constraint :attendance,
-      "checkout IS NULL OR checkout > checkin",
+      "checkout IS NULL OR checkout >= checkin",
       name: "attendance_checkout_after_checkin"
 
     execute <<~SQL
@@ -28,24 +28,38 @@ class CreateAttendance < ActiveRecord::Migration[8.1]
       LANGUAGE plpgsql
       AS $$
       BEGIN
-        IF NEW.checkout IS NOT NULL AND NEW.checkout <= NEW.checkin THEN
+        IF NEW.checkout IS NOT NULL AND NEW.checkout < NEW.checkin THEN
           RAISE EXCEPTION
-            'checkout (%) must be after checkin (%)',
+            'checkout (%) must be at or after checkin (%)',
             NEW.checkout, NEW.checkin
             USING ERRCODE = 'check_violation';
         END IF;
 
-        IF EXISTS (
-          SELECT 1
-          FROM attendance a
-          WHERE a.student_id = NEW.student_id
-            AND a.checkout   IS NULL
-            AND a.id         IS DISTINCT FROM NEW.id
-        ) THEN
+        IF NEW.checkout IS NOT NULL AND
+          (NEW.checkout AT TIME ZONE 'America/Los_Angeles')::date <>
+          (NEW.checkin AT TIME ZONE 'America/Los_Angeles')::date THEN
           RAISE EXCEPTION
-            'student % already has an open checkin; checkout first',
-            NEW.student_id
-            USING ERRCODE = 'exclusion_violation';
+            'checkin (%) and checkout (%) must be on the same Pacific day',
+            NEW.checkin, NEW.checkout
+            USING ERRCODE = 'check_violation';
+        END IF;
+
+        IF TG_OP = 'INSERT' OR NEW.checkout IS NULL THEN
+          -- Serialize competing inserts, including visits already checked out.
+          PERFORM 1 FROM students WHERE id = NEW.student_id FOR NO KEY UPDATE;
+
+          IF EXISTS (
+            SELECT 1
+            FROM attendance a
+            WHERE a.student_id = NEW.student_id
+              AND a.checkout IS NULL
+              AND (TG_OP = 'INSERT' OR a.id IS DISTINCT FROM OLD.id)
+          ) THEN
+            RAISE EXCEPTION
+              'student % already has an open checkin; checkout first',
+              NEW.student_id
+              USING ERRCODE = 'exclusion_violation';
+          END IF;
         END IF;
 
         RETURN NEW;

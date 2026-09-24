@@ -8,8 +8,9 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#show"
+    post "clear_attendance", to: "dashboard#clear_attendance", as: :clear_attendance
     resources :students, only: %i[ index new create edit update ]
-    resources :checkins, only: %i[ index destroy ]
+    resources :checkins, only: %i[ index edit update destroy ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

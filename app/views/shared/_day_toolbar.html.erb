@@ -12,6 +12,17 @@
     <% end %>
     <div class="text-center">
       <div class="fs-5 fw-semibold"><%= l(day, format: :long_day) %></div>
+      <% if route == :checkins_path && day < Date.current %>
+        <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
+          <span>Check-in time</span>
+          <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-in time" data-checkin-time-target="field">
+        </label>
+      <% elsif route == :checkouts_path && day < Date.current %>
+        <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
+          <span>Check-out time</span>
+          <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-out time" data-checkin-time-target="field">
+        </label>
+      <% end %>
       <% unless day == Date.current %>
         <%= link_to "Back to today", public_send(route, grade: grade.presence, q: query.presence), class: "small" %>
       <% end %>
@@ -32,7 +43,12 @@
     <%= hidden_field_tag :day, day %>
     <%= hidden_field_tag :grade, grade, data: { roster_filter_target: "grade" } %>
     <label class="visually-hidden" for="<%= route %>_query">Find a student</label>
-    <%= text_field_tag :q, query, id: "#{route}_query", class: "form-control form-control-lg mb-3", placeholder: "Type a name", autocomplete: "off", enterkeyhint: "search", data: { roster_filter_target: "query", action: "input->roster-filter#submit", autofocus: (autofocus ? "true" : nil) } %>
+    <div class="input-group mb-3">
+      <%= text_field_tag :q, query, id: "#{route}_query", class: "form-control form-control-lg", placeholder: "Type any part of a name", autocomplete: "off", enterkeyhint: "search", data: { roster_filter_target: "query", action: "input->roster-filter#submit keydown.esc->roster-filter#clearOnEscape", autofocus: (autofocus ? "true" : nil) } %>
+      <button type="button" class="btn btn-outline-secondary" aria-label="Clear search" title="Clear search" data-roster-filter-target="clearButton" data-action="roster-filter#clearQuery" <%= "hidden" if query.blank? %>>
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <div class="d-flex flex-wrap gap-2" role="group" aria-label="Grade">
       <%= button_tag "All", type: "button", aria: { pressed: grade.blank? }, class: "btn #{grade.blank? ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: "all" } %>
       <% Student.grade_options.each do |label, number| %>

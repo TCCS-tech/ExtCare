@@ -17,7 +17,7 @@
         <span class="fs-4 fw-semibold text-nowrap"><%= clock(visit.checkout) %></span>
       <% else %>
         <%= button_to "Check out", checkouts_path,
-              params: { attendance_id: visit.id, day: day, grade: grade, q: query },
+              params: { attendance_id: visit.id, day: day, grade: grade, q: query, checkout_time: (day < Date.current ? "15:00" : nil) },
               class: "btn btn-primary btn-lg",
               form: { class: "m-0" } %>
         <button type="button" class="btn btn-outline-secondary btn-lg pickup-details-button" data-bs-toggle="modal" data-bs-target="#pickup-modal-<%= visit.id %>" aria-label="Add pickup name for <%= visit.student.full_name %>" title="Add pickup name">
@@ -39,8 +39,8 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <%= form.label :pickup_notes, "Pickup person’s name", class: "form-label" %>
-              <%= form.text_field :pickup_notes, class: "form-control", autocomplete: "name", placeholder: "Enter a name", maxlength: 255 %>
+              <%= form.label :pickup_notes, "Pickup Notes", class: "form-label" %>
+              <%= form.text_field :pickup_notes, class: "form-control", autocomplete: "name", placeholder: "Enter a name or a note", maxlength: 255 %>
               <div class="form-text">Optional. You can still check out without adding a name.</div>
             </div>
             <div class="modal-footer">
@@ -53,6 +53,6 @@
     </div>
   <% end %>
   <% if visit.pickup_notes.present? %>
-    <div class="small text-body-secondary mt-2">Picked up by <%= visit.pickup_notes %></div>
+    <div class="small text-body-secondary mt-2">Pickup notes: <%= visit.pickup_notes %></div>
   <% end %>
 <% end %>

@@ -32,7 +32,7 @@
         <span class="fs-4 fw-semibold text-nowrap"><%= clock(open_today.checkin) %></span>
       <% elsif open_visit.nil? %>
         <%= button_to "Check in", checkins_path,
-              params: { student_id: student.id, day: day, grade: grade, q: query },
+              params: { student_id: student.id, day: day, grade: grade, q: query, checkin_time: (day < Date.current ? "15:00" : nil) },
               class: "btn btn-primary btn-lg",
               form: { class: "m-0" } %>
       <% end %>
