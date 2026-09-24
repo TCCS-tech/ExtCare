@@ -3,27 +3,29 @@
 
 <div data-controller="attendance-lists checkin-time" data-action="turbo:before-cache@document->attendance-lists#finishTransitions submit->checkin-time#submit">
   <%= render "shared/day_toolbar", route: :checkins_path, day: @day, grade: @grade, query: @q, autofocus: true %>
-  <% if @other_open_days.any? %>
-    <div class="alert alert-warning">
-      Open check-ins on other days:
-      <% @other_open_days.each do |other_day| %>
-        <%= link_to l(other_day, format: :long_day), checkouts_path(day: other_day, grade: @grade, q: @q.presence), class: "alert-link d-block" %>
-      <% end %>
-    </div>
-  <% end %>
-  <% [["ready", (@q.present? ? "Searching for #{@q}" : "Frequent Check-ins"), @ready_students, "No students waiting to check in."],
-      ["completed", "Already checked in", @checked_in_students, "No students checked in yet."]].each do |key, title, students, empty_message| %>
-    <section class="attendance-section" aria-labelledby="checkin-<%= key %>-heading">
-      <h2 id="checkin-<%= key %>-heading" class="attendance-heading"><%= title %></h2>
-      <div id="checkin-<%= key %>" class="list-group shadow-sm attendance-list" data-attendance-lists-target="<%= key %>">
-        <% students.each do |student| %>
-          <%= render "student", student: student,
-                visits: @visits_by_student[student.id] || [], open_visit: @open_visits[student.id],
-                here_yesterday: @yesterday_ids.include?(student.id), day: @day, grade: @grade, query: @q %>
+  <%= turbo_frame_tag "checkins-results", target: "_top" do %>
+    <% if @other_open_days.any? %>
+      <div class="alert alert-warning">
+        Open check-ins on other days:
+        <% @other_open_days.each do |other_day| %>
+          <%= link_to l(other_day, format: :long_day), checkouts_path(day: other_day, grade: @grade, q: @q.presence), class: "alert-link d-block" %>
         <% end %>
       </div>
-      <p class="empty-state attendance-empty"><%= empty_message %></p>
-    </section>
+    <% end %>
+    <% [["ready", (@q.present? ? "Searching for #{@q}" : "Frequent Check-ins"), @ready_students, "No students waiting to check in."],
+        ["completed", "Already checked in", @checked_in_students, "No students checked in yet."]].each do |key, title, students, empty_message| %>
+      <section class="attendance-section" aria-labelledby="checkin-<%= key %>-heading">
+        <h2 id="checkin-<%= key %>-heading" class="attendance-heading"><%= title %></h2>
+        <div id="checkin-<%= key %>" class="list-group shadow-sm attendance-list" data-attendance-lists-target="<%= key %>">
+          <% students.each do |student| %>
+            <%= render "student", student: student,
+                  visits: @visits_by_student[student.id] || [], open_visit: @open_visits[student.id],
+                  here_yesterday: @yesterday_ids.include?(student.id), day: @day, grade: @grade, query: @q %>
+          <% end %>
+        </div>
+        <p class="empty-state attendance-empty"><%= empty_message %></p>
+      </section>
+    <% end %>
+    <p class="attendance-feedback" role="status" data-attendance-lists-target="status"></p>
   <% end %>
-  <p class="attendance-feedback" role="status" data-attendance-lists-target="status"></p>
 </div>

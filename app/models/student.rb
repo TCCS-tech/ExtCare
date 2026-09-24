@@ -26,15 +26,68 @@ class Student < ApplicationRecord
     number = grade_number(grade)
     number ? where(students: { grade: number }) : all
   }
-  scope :named, ->(query) {
-    term = query.to_s.strip
-    next all if term.blank?
 
-    like = "%#{sanitize_sql_like(term)}%"
-    where(
-      "students.first_name ILIKE :q OR students.last_name ILIKE :q OR (students.first_name || ' ' || students.last_name) ILIKE :q",
-      q: like
-    )
+  scope :named, ->(query) {
+    terms = query.to_s.split
+    next all if terms.empty?
+
+    t = arel_table
+
+    filters = terms.flat_map { |term|
+      pattern = "%#{sanitize_sql_like(term)}%"
+      [
+        t[:first_name].matches(pattern),
+        t[:last_name].matches(pattern)
+      ]
+    }
+    relation = where(filters.reduce(:or))
+
+    first, last = terms.first, terms.last
+    first_prefix = "#{sanitize_sql_like(first)}%"
+    last_prefix  = "#{sanitize_sql_like(last)}%"
+    first_any    = "%#{sanitize_sql_like(first)}%"
+    last_any     = "%#{sanitize_sql_like(last)}%"
+
+    score_sql =
+      if terms.length >= 2
+        sanitize_sql_array([
+          <<~SQL.squish,
+            CASE
+              WHEN first_name ILIKE ? AND last_name ILIKE ? THEN 500
+              WHEN first_name ILIKE ? AND last_name ILIKE ? THEN 400
+              WHEN first_name ILIKE ? OR  last_name ILIKE ? THEN 300
+              WHEN first_name ILIKE ? OR  last_name ILIKE ? THEN 200
+              ELSE 0
+            END
+          SQL
+          first_prefix, last_prefix,   # 500
+          first_any,    last_any,      # 400
+          first_prefix, last_prefix,   # 300
+          first_any,    last_any       # 200
+        ])
+      else
+        sanitize_sql_array([
+          <<~SQL.squish,
+            CASE
+              WHEN first_name ILIKE ? OR last_name ILIKE ? THEN 300
+              WHEN first_name ILIKE ? OR last_name ILIKE ? THEN 200
+              ELSE 0
+            END
+          SQL
+          first_prefix, first_prefix,  # 300
+          first_any,    first_any      # 200
+        ])
+      end
+
+    # optional: +10 per term hit, still bound
+    hit_bonus = terms.map { |term|
+      p = "%#{sanitize_sql_like(term)}%"
+      sanitize_sql_array(
+        ["(CASE WHEN first_name ILIKE ? OR last_name ILIKE ? THEN 10 ELSE 0 END)", p, p]
+      )
+    }.join(" + ")
+
+    relation.order(Arel.sql("(#{score_sql} + #{hit_bonus}) DESC"))
   }
   scope :ordered_by_name, -> {
     order(Arel.sql("lower(students.first_name), lower(students.last_name), students.id"))

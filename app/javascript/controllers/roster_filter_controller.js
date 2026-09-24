@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "query", "grade", "focus", "clearButton" ]
+  static targets = [ "query", "grade", "focus", "clearButton", "form" ]
 
   connect() {
     if (!this.hasQueryTarget || this.queryTarget.dataset.autofocus !== "true") return
@@ -40,8 +40,15 @@ export default class extends Controller {
   }
 
   submitGrade(event) {
+    clearTimeout(this.timer)
     const grade = event.params.grade
     this.gradeTarget.value = grade === "all" || grade == null ? "" : grade
+    this.element.querySelectorAll("[data-roster-filter-grade-param]").forEach(button => {
+      const active = button.dataset.rosterFilterGradeParam === (this.gradeTarget.value || "all")
+      button.classList.toggle("btn-primary", active)
+      button.classList.toggle("btn-outline-primary", !active)
+      button.setAttribute("aria-pressed", active)
+    })
     this.submitField(this.queryTarget)
   }
 
@@ -50,8 +57,25 @@ export default class extends Controller {
   }
 
   submitField(field) {
+    clearTimeout(this.timer)
     if (this.hasFocusTarget && field?.name) this.focusTarget.value = field.name
-    this.element.requestSubmit()
+    this.updateNavigation()
+    const form = this.hasFormTarget ? this.formTarget : this.element
+    form.requestSubmit()
+  }
+
+  updateNavigation() {
+    if (!this.hasGradeTarget) return
+
+    // The toolbar stays in place while the results frame changes.
+    this.element.querySelectorAll("a[href]").forEach(link => {
+      const url = new URL(link.href)
+      for (const field of [this.queryTarget, this.gradeTarget]) {
+        if (field.value) url.searchParams.set(field.name, field.value)
+        else url.searchParams.delete(field.name)
+      }
+      link.href = url.toString()
+    })
   }
 
   updateClearButton() {

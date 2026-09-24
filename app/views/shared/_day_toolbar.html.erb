@@ -1,5 +1,5 @@
 <%# locals: (route:, day:, grade:, query:, autofocus: false) %>
-<div class="day-toolbar mb-3">
+<div class="day-toolbar mb-3" data-controller="roster-filter">
   <div class="attendance-switch mb-3" role="navigation" aria-label="Attendance pages">
     <%= link_to "Check in", checkins_path(day: day, grade: grade.presence, q: query.presence),
           class: "attendance-switch-link", aria: { current: ("page" if route == :checkins_path) } %>
@@ -39,7 +39,7 @@
     <% end %>
   </div>
 
-  <%= form_with url: public_send(route), method: :get, data: { controller: "roster-filter", turbo_action: "advance" } do %>
+  <%= form_with url: public_send(route), method: :get, data: { roster_filter_target: "form", turbo_action: "advance", turbo_frame: "#{route.to_s.delete_suffix("_path")}-results" } do %>
     <%= hidden_field_tag :day, day %>
     <%= hidden_field_tag :grade, grade, data: { roster_filter_target: "grade" } %>
     <label class="visually-hidden" for="<%= route %>_query">Find a student</label>
