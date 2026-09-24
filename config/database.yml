@@ -22,4 +22,6 @@ production:
   <<: *default
   database: neondb
   username: extcare
+  host: <%= ENV["EXTCARE_DATABASE_HOST"] %>
   password: <%= ENV["EXTCARE_DATABASE_PASSWORD"] %>
+  sslmode: require
