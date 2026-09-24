@@ -14,22 +14,6 @@ SET row_security = off;
 -- Name: extcare; Type: SCHEMA; Schema: -; Owner: -
 --
 
-CREATE SCHEMA extcare;
-
-
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA public;
-
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
 
 --
 -- Name: role_enum; Type: TYPE; Schema: extcare; Owner: -
@@ -139,6 +123,77 @@ CREATE SEQUENCE extcare.attendance_id_seq
 --
 
 ALTER SEQUENCE extcare.attendance_id_seq OWNED BY extcare.attendance.id;
+
+
+--
+-- Name: billing_records; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.billing_records (
+    id bigint NOT NULL,
+    student_id bigint NOT NULL,
+    day date NOT NULL,
+    am_cents integer DEFAULT 0 NOT NULL,
+    pm_cents integer DEFAULT 0 NOT NULL,
+    late_fee_cents integer DEFAULT 0 NOT NULL,
+    total_cents integer DEFAULT 0 NOT NULL,
+    notes text,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL
+);
+
+
+--
+-- Name: billing_records_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.billing_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: billing_records_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.billing_records_id_seq OWNED BY extcare.billing_records.id;
+
+
+--
+-- Name: extended_care_schedules; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.extended_care_schedules (
+    id bigint NOT NULL,
+    day date,
+    start_time time without time zone NOT NULL,
+    end_time time without time zone NOT NULL,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL,
+    CONSTRAINT extended_care_schedule_end_after_start CHECK ((end_time > start_time))
+);
+
+
+--
+-- Name: extended_care_schedules_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.extended_care_schedules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: extended_care_schedules_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.extended_care_schedules_id_seq OWNED BY extcare.extended_care_schedules.id;
 
 
 --
@@ -265,6 +320,20 @@ ALTER TABLE ONLY extcare.attendance ALTER COLUMN id SET DEFAULT nextval('extcare
 
 
 --
+-- Name: billing_records id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.billing_records ALTER COLUMN id SET DEFAULT nextval('extcare.billing_records_id_seq'::regclass);
+
+
+--
+-- Name: extended_care_schedules id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.extended_care_schedules ALTER COLUMN id SET DEFAULT nextval('extcare.extended_care_schedules_id_seq'::regclass);
+
+
+--
 -- Name: sessions id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
@@ -299,6 +368,22 @@ ALTER TABLE ONLY extcare.ar_internal_metadata
 
 ALTER TABLE ONLY extcare.attendance
     ADD CONSTRAINT attendance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: billing_records billing_records_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.billing_records
+    ADD CONSTRAINT billing_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: extended_care_schedules extended_care_schedules_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.extended_care_schedules
+    ADD CONSTRAINT extended_care_schedules_pkey PRIMARY KEY (id);
 
 
 --
@@ -359,6 +444,34 @@ CREATE INDEX index_attendance_on_student_id ON extcare.attendance USING btree (s
 --
 
 CREATE INDEX index_attendance_on_student_id_and_day ON extcare.attendance USING btree (student_id, day);
+
+
+--
+-- Name: index_billing_records_on_student_id; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE INDEX index_billing_records_on_student_id ON extcare.billing_records USING btree (student_id);
+
+
+--
+-- Name: index_billing_records_on_student_id_and_day; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_billing_records_on_student_id_and_day ON extcare.billing_records USING btree (student_id, day);
+
+
+--
+-- Name: index_extended_care_schedules_default; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_extended_care_schedules_default ON extcare.extended_care_schedules USING btree (day) WHERE (day IS NULL);
+
+
+--
+-- Name: index_extended_care_schedules_on_day; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_extended_care_schedules_on_day ON extcare.extended_care_schedules USING btree (day) WHERE (day IS NOT NULL);
 
 
 --
@@ -427,6 +540,14 @@ ALTER TABLE ONLY extcare.attendance
 
 
 --
+-- Name: billing_records fk_rails_5d2d21324c; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.billing_records
+    ADD CONSTRAINT fk_rails_5d2d21324c FOREIGN KEY (student_id) REFERENCES extcare.students(id) ON DELETE RESTRICT;
+
+
+--
 -- Name: sessions fk_rails_758836b4f0; Type: FK CONSTRAINT; Schema: extcare; Owner: -
 --
 
@@ -441,6 +562,7 @@ ALTER TABLE ONLY extcare.sessions
 SET search_path TO extcare,public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260924010000'),
 ('20260923012633'),
 ('20260923012632'),
 ('20260923012631'),

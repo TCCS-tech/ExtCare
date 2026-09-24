@@ -8,6 +8,7 @@ class Student < ApplicationRecord
   FLAGS = [ [ "staff", "Staff" ], [ "prepaid_am", "Prepaid AM" ], [ "prepaid_pm", "Prepaid PM" ] ].freeze
 
   has_many :attendances, inverse_of: :student
+  has_many :billing_records, inverse_of: :student
 
   normalizes :first_name, :last_name, with: ->(name) { name.to_s.strip.gsub(/\s+/, " ") }
   normalizes :blackbaud_id, with: ->(value) { value.to_s.strip.presence }

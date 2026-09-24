@@ -33,5 +33,7 @@ module Extcare
     config.time_zone = "Pacific Time (US & Canada)"
     config.active_record.default_timezone = :local
     config.active_record.schema_format = :sql
+    config.active_record.dump_schemas = "extcare"
+
   end
 end

@@ -6,6 +6,8 @@ class Attendance < ApplicationRecord
 
   validates :day, :checkin, presence: true
 
+  after_update_commit :recalculate_billing, if: :saved_change_to_checkout?
+
   scope :open, -> { where(checkout: nil) }
   scope :on, ->(day) { where(day: day) }
 
@@ -75,4 +77,10 @@ class Attendance < ApplicationRecord
     cause.is_a?(PG::UniqueViolation) || cause.is_a?(PG::ExclusionViolation)
   end
   private_class_method :open_visit_violation?
+
+  private
+
+  def recalculate_billing
+    BillingRecord.recalculate!(student: student, day: day)
+  end
 end

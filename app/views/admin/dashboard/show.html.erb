@@ -20,6 +20,18 @@
       <p class="text-body-secondary mb-0">Add staff accounts and change user passwords.</p>
     <% end %>
   </div>
+  <div class="col-12 col-md-6">
+    <%= link_to admin_billing_records_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">Billing</h2>
+      <p class="text-body-secondary mb-0">Review daily charges by Blackbaud account.</p>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-6">
+    <%= link_to admin_extended_care_schedules_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">Care schedule</h2>
+      <p class="text-body-secondary mb-0">Set default and date-specific extended care hours.</p>
+    <% end %>
+  </div>
   <% if Rails.env.development? %>
     <div class="col-12 col-md-6">
       <div class="card card-body shadow-sm h-100">
