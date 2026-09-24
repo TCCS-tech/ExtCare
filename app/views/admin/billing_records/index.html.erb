@@ -1,10 +1,9 @@
 <% content_for :title, "Billing" %>
 <%= render "shared/page_heading", title: "Daily billing", description: "Saved charges recorded per student.", eyebrow: "SCHOOL OFFICE" %>
-<%= form_with url: admin_billing_records_path, method: :get, class: "row g-2 align-items-end mb-3" do |form| %>
-  <div class="col-auto"><%= form.label :day, "Day", class: "form-label" %><%= form.date_field :day, value: @day, class: "form-control" %></div>
-  <div class="col-auto"><%= form.submit "View", class: "btn btn-primary" %></div>
+<%= form_with url: admin_billing_records_path, method: :get, class: "row g-2 align-items-end mb-3", data: { controller: "roster-filter", turbo_stream: true } do |form| %>
+  <div class="col-auto"><%= form.label :day, "Date", class: "form-label" %><%= form.date_field :day, value: @day, class: "form-control", data: { action: "change->roster-filter#submitNow" } %></div>
+  <div class="col-auto"><%= form.label :q, "Search", class: "form-label" %><%= form.search_field :q, value: @query, class: "form-control", placeholder: "Blackbaud ID, student ID, or name", autocomplete: "off", data: { roster_filter_target: "query", action: "input->roster-filter#submit" } %></div>
 <% end %>
-<div class="table-responsive"><table class="table table-striped align-middle"><thead><tr><th>Student</th><th>Blackbaud ID</th><th>Visits</th><th>AM</th><th>PM</th><th>Late fee</th><th>Total</th></tr></thead><tbody>
-  <% @records.each do |record| %><tr><td><%= record.student.full_name %></td><td><%= record.student.blackbaud_id %></td><td><%= record.notes.presence || "—" %></td><td><%= number_to_currency(record.am_cents / 100.0) %></td><td><%= number_to_currency(record.pm_cents / 100.0) %></td><td><%= number_to_currency(record.late_fee_cents / 100.0) %></td><td class="fw-semibold"><%= number_to_currency(record.total_cents / 100.0) %></td></tr><% end %>
-  <% if @records.empty? %><tr><td colspan="7" class="text-body-secondary">No billing records for this day.</td></tr><% end %>
-</tbody></table></div>
+<%= turbo_frame_tag "billing-records-results" do %>
+  <%= render "results" %>
+<% end %>

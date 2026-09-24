@@ -10,10 +10,10 @@ class BillingRecord < ApplicationRecord
 
   def self.recalculate!(student:, day:)
     visits = Attendance.on(day).where(student_id: student.id).order(:checkin).to_a
-    amounts = calculate_amounts(visits.select { |visit| visit.checkout.present? }, day: day)
-    if student.staff? || student.prepaid_am? || student.prepaid_pm?
-      amounts = { am_cents: 0, pm_cents: 0, late_fee_cents: 0, total_cents: 0 }
-    end
+    amounts = calculate_amounts(visits.select { |visit| visit.checkout.present? }, day: day, student: student)
+    # if student.staff? || student.prepaid_am? || student.prepaid_pm?
+    #   amounts = { am_cents: 0, pm_cents: 0, late_fee_cents: 0, total_cents: 0 }
+    # end
     amounts[:notes] = visit_summary(visits)
     record = find_or_initialize_by(student: student, day: day)
     record.assign_attributes(amounts)
@@ -21,23 +21,25 @@ class BillingRecord < ApplicationRecord
     record
   end
 
-  def self.calculate_amounts(visits, day:)
+  def self.calculate_amounts(visits, day:, student:)
     am_visits = visits.select { |visit| visit.checkin.in_time_zone.hour < 12 }
     pm_visits = visits.select { |visit| visit.checkin.in_time_zone.hour >= 12 }
-    am_cents = am_visits.empty? ? 0 : 500
+
+    am_cents = am_visits.empty? || student.staff? || student.prepaid_am? ? 0 : 500
 
     pm_seconds = pm_visits.sum { |visit| visit.checkout - visit.checkin }
     pm_minutes = (pm_seconds.ceil + 59) / 60
     extra_minutes = [ pm_minutes - 60, 0 ].max
     extra_half_hour_blocks = (extra_minutes + 29) / 30
     pm_cents = pm_minutes.positive? ? 1_000 + extra_half_hour_blocks * 500 : 0
-
+    pm_cents = student.staff? || student.prepaid_pm? ? 0 : pm_cents
+    
     late_fee_cents = 0
     final_checkout = pm_visits.map(&:checkout).max
     if final_checkout
       schedule = ExtendedCareSchedule.for_day(day)
       scheduled_end = Time.zone.local(day.year, day.month, day.day, schedule.end_time.hour, schedule.end_time.min)
-      late_start = scheduled_end + 30.minutes
+      late_start = scheduled_end
       late_minutes = ((final_checkout - late_start) / 60.0).ceil
       late_fee_cents = case late_minutes
       when 1..10 then 2_500
