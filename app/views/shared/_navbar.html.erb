@@ -10,7 +10,7 @@
         <li class="nav-item"><%= link_to "Check in", checkins_path, class: nav_link_class("checkins") %></li>
         <li class="nav-item"><%= link_to "Check out", checkouts_path, class: nav_link_class("checkouts") %></li>
         <% if Current.user.admin? %>
-          <li class="nav-item"><%= link_to "Admin", admin_root_path, class: nav_link_class("dashboard") %></li>
+          <li class="nav-item"><%= link_to "Admin", admin_root_path, class: nav_link_class("admin") %></li>
         <% end %>
       </ul>
       <div class="d-flex align-items-lg-center flex-column flex-lg-row gap-2 py-2 py-lg-0">

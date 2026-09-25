@@ -10,6 +10,8 @@ module ApplicationHelper
   end
 
   def nav_link_class(name)
-    "nav-link#{" active" if controller_name == name}"
+    admin_route = controller_path.start_with?("admin/")
+    active = name == "admin" ? admin_route : !admin_route && controller_name == name
+    "nav-link#{" active" if active}"
   end
 end

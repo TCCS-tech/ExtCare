@@ -13,15 +13,41 @@
     <div class="text-center">
       <div class="fs-5 fw-semibold"><%= l(day, format: :long_day) %></div>
       <% if route == :checkins_path %>
-        <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
-          <span>Check-in time</span>
-          <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-in time" data-checkin-time-target="field">
-        </label>
+        <% if day == Date.current %>
+          <div class="small d-flex align-items-center justify-content-center gap-2 mt-1" data-checkin-time-target="currentTimeControl">
+            <span aria-live="off" data-checkin-time-target="clock"></span>
+            <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="Adjust check-in time" title="Adjust check-in time" data-action="checkin-time#showAdjustment">
+              <span aria-hidden="true">&#x23F1;</span>
+            </button>
+            <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-in time" data-checkin-time-target="field" hidden>
+            <button type="button" class="btn btn-sm btn-link p-0" aria-label="Use current time" title="Use current time" data-checkin-time-target="resetButton" data-action="checkin-time#useCurrentTime" hidden>
+              <span aria-hidden="true">&#x21BA;</span>
+            </button>
+          </div>
+        <% else %>
+          <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
+            <span>Check-in time</span>
+            <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-in time" data-checkin-time-target="field">
+          </label>
+        <% end %>
       <% elsif route == :checkouts_path %>
-        <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
-          <span>Check-out time</span>
-          <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-out time" data-checkin-time-target="field">
-        </label>
+        <% if day == Date.current %>
+          <div class="small d-flex align-items-center justify-content-center gap-2 mt-1" data-checkin-time-target="currentTimeControl">
+            <span aria-live="off" data-checkin-time-target="clock"></span>
+            <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="Adjust check-out time" title="Adjust check-out time" data-action="checkin-time#showAdjustment">
+              <span aria-hidden="true">&#x23F1;</span>
+            </button>
+            <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-out time" data-checkin-time-target="field" hidden>
+            <button type="button" class="btn btn-sm btn-link p-0" aria-label="Use current time" title="Use current time" data-checkin-time-target="resetButton" data-action="checkin-time#useCurrentTime" hidden>
+              <span aria-hidden="true">&#x21BA;</span>
+            </button>
+          </div>
+        <% else %>
+          <label class="small d-flex align-items-center justify-content-center gap-2 mt-1">
+            <span>Check-out time</span>
+            <input type="time" class="form-control form-control-sm" value="15:00" required aria-label="Check-out time" data-checkin-time-target="field">
+          </label>
+        <% end %>
       <% end %>
       <% unless day == Date.current %>
         <%= link_to "Back to today", public_send(route, grade: grade.presence, q: query.presence), class: "small" %>
