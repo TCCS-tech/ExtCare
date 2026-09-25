@@ -11,6 +11,30 @@ just server
 
 Open http://localhost:3000
 
+## Password reset email
+
+Production sends password reset messages through Gmail SMTP. Configure these
+environment variables in the production host (keep the password in its secret
+manager; do not commit it):
+
+| Variable | Value |
+| --- | --- |
+| `SMTP_ADDRESS` | `smtp.gmail.com` |
+| `SMTP_PORT` | `587` |
+| `SMTP_USERNAME` | Full Gmail or Google Workspace email address |
+| `SMTP_PASSWORD` | Google App Password (not the account password) |
+| `MAILER_FROM` | Same address as `SMTP_USERNAME` |
+| `APP_HOST` | Public app hostname, without `https://` (for example `app.example.com`) |
+
+For Google, turn on 2-Step Verification, then create an App Password in your
+Google Account security settings. If Google Workspace blocks App Passwords,
+an administrator must allow them or you will need a transactional email
+provider. Set the variables on the production host and restart/redeploy the
+app. Password reset links use HTTPS and `APP_HOST`.
+
+These settings apply to production. Local development uses Rails' existing
+development mail configuration.
+
 | Email | Password | Role |
 | --- | --- | --- |
 | admin@example.com | password | Admin |
