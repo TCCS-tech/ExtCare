@@ -4,7 +4,7 @@ class Admin::BillingRecordsController < Admin::BaseController
 
   EXPORT_HEADERS = [
     "Family Id", "School Student Id", "Student Last Name", "Student First Name",
-    "Grade Level", "Account Status", "Billing name", "Amount", "Custom Fee Description"
+    "Grade Level",  "Amount", "Notes", "Account Status", "Billing name", "Custom Fee Description"
   ].freeze
 
   def index
@@ -46,21 +46,37 @@ class Admin::BillingRecordsController < Admin::BaseController
     return head :unprocessable_entity unless month
 
     month_name = Date::MONTHNAMES[month]
-    records = BillingRecord.includes(:student).joins(:student)
+    records = BillingRecord.joins(:student)
       .where("EXTRACT(MONTH FROM billing_records.day) = ?", month)
-      .order(:day, "students.last_name", "students.first_name")
+      .group("students.blackbaud_id", "students.student_id")
+      .order(Arel.sql("MAX(students.grade) ASC, MAX(students.last_name) ASC, MAX(students.first_name) ASC"))
+      .pluck(
+        "students.blackbaud_id",
+        "students.student_id",
+        Arel.sql("MAX(students.last_name)"),
+        Arel.sql("MAX(students.first_name)"),
+        Arel.sql("MAX(students.grade)"),
+        Arel.sql("SUM(billing_records.total_cents)"),
+        Arel.sql("BOOL_OR(students.staff)"),
+        Arel.sql("BOOL_OR(students.prepaid_am)"),
+        Arel.sql("BOOL_OR(students.prepaid_pm)")
+      )
 
-    rows = records.map do |record|
-      student = record.student
+    rows = records.map do |blackbaud_id, student_id, last_name, first_name, grade, total_cents, staff, prepaid_am, prepaid_pm|
+      notes = []
+      notes << "Staff" if staff
+      notes << "Prepaid AM" if prepaid_am
+      notes << "Prepaid PM" if prepaid_pm
       [
-        student.blackbaud_id,
-        student.student_id,
-        student.last_name,
-        student.first_name,
-        export_grade_level(student.grade),
+        blackbaud_id,
+        student_id,
+        last_name,
+        first_name,
+        export_grade_level(grade),
+        total_cents / 100.0,
+        notes.join(", "),
         "Active",
         "Elementary Extended Care",
-        record.total_cents / 100.0,
         "#{month_name} Extended Care billing"
       ]
     end
