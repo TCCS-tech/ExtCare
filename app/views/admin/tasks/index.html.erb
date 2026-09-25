@@ -21,6 +21,22 @@
   <% end %>
 </section>
 
+<%= form_with url: admin_tasks_path, method: :get, class: "task-search mb-4" do |form| %>
+  <%= form.label :q, "Search tasks", class: "visually-hidden" %>
+  <div class="task-search-control">
+    <span class="task-search-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.2 4.2"/></svg>
+    </span>
+    <%= form.search_field :q, value: @query, class: "task-search-input", placeholder: "Search title or description", autocomplete: "off" %>
+    <% if @query.present? %>
+      <%= link_to admin_tasks_path, class: "task-search-clear", aria: { label: "Clear search" }, title: "Clear search" do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      <% end %>
+    <% end %>
+    <%= form.submit "Search", class: "task-search-submit" %>
+  </div>
+<% end %>
+
 <div class="task-board" data-controller="task-board" data-task-board-reorder-url-value="<%= reorder_admin_tasks_path %>">
   <% { "todo" => [ "To do", @todo_tasks ], "done" => [ "Done", @done_tasks ] }.each do |status, (label, tasks)| %>
     <section class="task-lane" aria-label="<%= label %>">
@@ -30,7 +46,7 @@
       </header>
       <div class="task-list" data-task-board-target="list" data-status="<%= status %>" data-action="dragover->task-board#dragOver drop->task-board#drop">
         <% tasks.each do |task| %>
-          <article class="task-card" draggable="true" data-task-id="<%= task.id %>" data-action="dragstart->task-board#dragStart dragend->task-board#dragEnd">
+          <article class="task-card" draggable="<%= @query.blank? %>" data-task-id="<%= task.id %>" data-action="<%= "dragstart->task-board#dragStart dragend->task-board#dragEnd" if @query.blank? %>">
             <span class="task-grip" aria-hidden="true">⠿</span>
             <h3><%= task.title %></h3>
             <% if task.description.present? %><div class="task-description"><%= simple_format(task.description) %></div><% end %>

@@ -1,8 +1,14 @@
 class Admin::TasksController < Admin::BaseController
   def index
     @task ||= Task.new
-    @todo_tasks = Task.todo.ordered.includes(:created_by)
-    @done_tasks = Task.done.ordered.includes(:created_by)
+    @query = params[:q].to_s.strip
+    tasks = Task.all
+    if @query.present?
+      pattern = "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%"
+      tasks = tasks.where("title ILIKE :pattern OR description ILIKE :pattern", pattern: pattern)
+    end
+    @todo_tasks = tasks.todo.ordered.includes(:created_by)
+    @done_tasks = tasks.done.ordered.includes(:created_by)
   end
 
   def create
