@@ -1,18 +1,18 @@
 <% content_for :title, "Care schedule" %>
-<%= render "shared/page_heading", title: "Extended care schedule", description: "Date-specific hours override the default schedule.", eyebrow: "SCHOOL OFFICE" %>
+<%= render "shared/page_heading", title: "Extended care schedule", description: "Date overrides take priority over weekday hours, which take priority over the default schedule.", eyebrow: "SCHOOL OFFICE" %>
 <% if @schedule.errors.any? %><div class="alert alert-danger"><%= @schedule.errors.full_messages.to_sentence %></div><% end %>
 <div class="vstack gap-2 mb-4">
   <% @schedules.each do |schedule| %>
     <div class="card card-body">
       <%= form_with model: schedule, url: admin_extended_care_schedule_path(schedule), method: :patch, class: "row g-2 align-items-end" do |form| %>
-        <div class="col-md-4"><span class="form-label d-block">Day</span><%= schedule.day ? l(schedule.day, format: :long_day) : "Default" %><%= form.hidden_field :day, value: schedule.day %></div>
+        <div class="col-md-4"><span class="form-label d-block">Applies to</span><%= schedule.day ? l(schedule.day, format: :long_day) : schedule.day_of_week&.capitalize || "Default" %><%= form.hidden_field :day, value: schedule.day %><%= form.hidden_field :day_of_week, value: schedule.day_of_week %></div>
         <div class="col-md-3"><%= form.label :start_time, "Start", class: "form-label" %><%= form.time_field :start_time, value: schedule.start_time.strftime("%H:%M"), class: "form-control" %></div>
         <div class="col-md-3"><%= form.label :end_time, "End", class: "form-label" %><%= form.time_field :end_time, value: schedule.end_time.strftime("%H:%M"), class: "form-control" %></div>
         <div class="col-md-2"><%= form.submit "Save", class: "btn btn-outline-primary" %></div>
       <% end %>
-      <% unless schedule.day.nil? %><%= button_to "Remove override", admin_extended_care_schedule_path(schedule), method: :delete, class: "btn btn-outline-danger btn-sm align-self-start mt-2" %><% end %>
+      <% if schedule.day || schedule.day_of_week %><%= button_to "Remove override", admin_extended_care_schedule_path(schedule), method: :delete, class: "btn btn-outline-danger btn-sm align-self-start mt-2" %><% end %>
     </div>
   <% end %>
 </div>
-<h2 class="h5">Add date override</h2>
-<%= form_with model: @schedule, url: admin_extended_care_schedules_path, class: "row g-2 align-items-end" do |form| %><div class="col-auto"><%= form.label :day, class: "form-label" %><%= form.date_field :day, class: "form-control" %></div><div class="col-auto"><%= form.label :start_time, "Start", class: "form-label" %><%= form.time_field :start_time, value: "15:00", class: "form-control" %></div><div class="col-auto"><%= form.label :end_time, "End", class: "form-label" %><%= form.time_field :end_time, value: "17:30", class: "form-control" %></div><div class="col-auto"><%= form.submit "Add override", class: "btn btn-primary" %></div><% end %>
+<h2 class="h5">Add override</h2>
+<%= form_with model: @schedule, url: admin_extended_care_schedules_path, class: "row g-2 align-items-end" do |form| %><div class="col-auto"><%= form.label :day, "Specific date", class: "form-label" %><%= form.date_field :day, class: "form-control" %></div><div class="col-auto"><%= form.label :day_of_week, "Or weekday", class: "form-label" %><%= form.select :day_of_week, options_for_select([["Select a weekday", ""]] + ExtendedCareSchedule::WEEKDAYS.map { |weekday| [weekday.capitalize, weekday] }, @schedule.day_of_week), {}, class: "form-select" %></div><div class="col-auto"><%= form.label :start_time, "Start", class: "form-label" %><%= form.time_field :start_time, value: "15:00", class: "form-control" %></div><div class="col-auto"><%= form.label :end_time, "End", class: "form-label" %><%= form.time_field :end_time, value: "17:30", class: "form-control" %></div><div class="col-auto"><%= form.submit "Add override", class: "btn btn-primary" %></div><% end %>

@@ -175,6 +175,8 @@ CREATE TABLE extcare.extended_care_schedules (
     end_time time without time zone NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
     updated_at timestamp(6) with time zone NOT NULL,
+    day_of_week character varying,
+    CONSTRAINT extended_care_schedule_date_or_weekday CHECK (((day IS NULL) OR (day_of_week IS NULL))),
     CONSTRAINT extended_care_schedule_end_after_start CHECK ((end_time > start_time))
 );
 
@@ -468,14 +470,21 @@ CREATE UNIQUE INDEX index_billing_records_on_student_id_and_day ON extcare.billi
 -- Name: index_extended_care_schedules_default; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE UNIQUE INDEX index_extended_care_schedules_default ON extcare.extended_care_schedules USING btree (day) WHERE (day IS NULL);
+CREATE UNIQUE INDEX index_extended_care_schedules_default ON extcare.extended_care_schedules USING btree (day) WHERE ((day IS NULL) AND (day_of_week IS NULL));
 
 
 --
--- Name: index_extended_care_schedules_on_day; Type: INDEX; Schema: extcare; Owner: -
+-- Name: index_extended_care_schedules_on_date; Type: INDEX; Schema: extcare; Owner: -
 --
 
-CREATE UNIQUE INDEX index_extended_care_schedules_on_day ON extcare.extended_care_schedules USING btree (day) WHERE (day IS NOT NULL);
+CREATE UNIQUE INDEX index_extended_care_schedules_on_date ON extcare.extended_care_schedules USING btree (day) WHERE (day IS NOT NULL);
+
+
+--
+-- Name: index_extended_care_schedules_on_day_of_week; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_extended_care_schedules_on_day_of_week ON extcare.extended_care_schedules USING btree (day_of_week) WHERE (day_of_week IS NOT NULL);
 
 
 --
@@ -566,6 +575,7 @@ ALTER TABLE ONLY extcare.sessions
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260924040000'),
 ('20260924030000'),
 ('20260924020000'),
 ('20260924010000'),

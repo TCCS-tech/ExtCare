@@ -1,6 +1,6 @@
 class Admin::ExtendedCareSchedulesController < Admin::BaseController
   def index
-    @schedules = ExtendedCareSchedule.order(Arel.sql("day NULLS FIRST"))
+    @schedules = ExtendedCareSchedule.order(Arel.sql("day NULLS FIRST, day_of_week NULLS FIRST"))
     @schedule ||= ExtendedCareSchedule.new
   end
 
@@ -33,6 +33,6 @@ class Admin::ExtendedCareSchedulesController < Admin::BaseController
   private
 
   def schedule_params
-    params.require(:extended_care_schedule).permit(:day, :start_time, :end_time)
+    params.require(:extended_care_schedule).permit(:day, :day_of_week, :start_time, :end_time)
   end
 end
