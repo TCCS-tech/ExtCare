@@ -42,7 +42,21 @@
               <% if visit.student.guardians.any? %>
                 <div class="mb-3">
                   <div class="form-label mb-1">Guardians</div>
-                  <div><%= visit.student.guardian_list %></div>
+                  <ul class="mb-0">
+                    <% visit.student.guardians.each do |guardian| %>
+                      <li><%= guardian %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+              <% if visit.student.additional_adults.any? %>
+                <div class="mb-3">
+                  <div class="form-label mb-1">Additional adults</div>
+                  <ul class="mb-0">
+                    <% visit.student.additional_adults.each do |adult| %>
+                      <li><%= adult %></li>
+                    <% end %>
+                  </ul>
                 </div>
               <% end %>
               <% if visit.student.notes.present? %>

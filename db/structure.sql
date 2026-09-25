@@ -14,6 +14,8 @@ SET row_security = off;
 -- Name: extcare; Type: SCHEMA; Schema: -; Owner: -
 --
 
+CREATE SCHEMA extcare;
+
 
 --
 -- Name: role_enum; Type: TYPE; Schema: extcare; Owner: -
@@ -256,7 +258,8 @@ CREATE TABLE extcare.students (
     prepaid_pm boolean DEFAULT false NOT NULL,
     hidden boolean DEFAULT false NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
-    updated_at timestamp(6) with time zone NOT NULL
+    updated_at timestamp(6) with time zone NOT NULL,
+    additional_adults text[] DEFAULT '{}'::text[] NOT NULL
 );
 
 
@@ -562,6 +565,7 @@ ALTER TABLE ONLY extcare.sessions
 SET search_path TO extcare,public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260924020000'),
 ('20260924010000'),
 ('20260923012633'),
 ('20260923012632'),

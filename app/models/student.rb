@@ -128,6 +128,14 @@ class Student < ApplicationRecord
     self.guardians = value.to_s.split(",").map(&:strip).reject(&:blank?)
   end
 
+  def additional_adult_list
+    additional_adults.to_a.join(", ")
+  end
+
+  def additional_adult_list=(value)
+    self.additional_adults = value.to_s.split(",").map(&:strip).reject(&:blank?)
+  end
+
   # Labels of the flags this student has, in FLAGS order.
   def flag_labels
     FLAGS.filter_map { |attribute, label| label if public_send(attribute) }
