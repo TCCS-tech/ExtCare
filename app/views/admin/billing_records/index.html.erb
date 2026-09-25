@@ -2,7 +2,10 @@
 <%= render "shared/page_heading", title: "Daily billing", description: "Saved charges recorded per student.", eyebrow: "SCHOOL OFFICE" %>
 <%= form_with url: admin_billing_records_path, method: :get, class: "row g-2 align-items-end mb-3", data: { controller: "roster-filter", turbo_stream: true } do |form| %>
   <div class="col-auto"><%= form.label :day, "Date", class: "form-label" %><%= form.date_field :day, value: @day, class: "form-control", data: { action: "change->roster-filter#submitNow" } %></div>
+  <div class="col-auto"><%= form.label :month, "Month", class: "form-label" %><%= form.select :month, options_for_select([ ["Any month", ""] ] + (1..12).map { |month| [Date::MONTHNAMES[month], month] }, @month), {}, class: "form-select", data: { action: "change->roster-filter#submitNow" } %></div>
+  <div class="col-auto"><%= form.label :grade, "Grade", class: "form-label" %><%= form.select :grade, options_for_select([ ["All grades", ""] ] + Student.grade_options, @grade), {}, class: "form-select", data: { action: "change->roster-filter#submitNow" } %></div>
   <div class="col-auto"><%= form.label :q, "Search", class: "form-label" %><%= form.search_field :q, value: @query, class: "form-control", placeholder: "Blackbaud ID, student ID, or name", autocomplete: "off", data: { roster_filter_target: "query", action: "input->roster-filter#submit" } %></div>
+  <div class="col-auto"><%= link_to "Clear filters", admin_billing_records_path, class: "btn btn-outline-secondary" %></div>
 <% end %>
 <%= turbo_frame_tag "billing-records-results" do %>
   <%= render "results" %>
