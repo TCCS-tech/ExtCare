@@ -1,0 +1,59 @@
+<% content_for :title, "Tasks · Admin" %>
+<%= render "shared/page_heading", title: "Tasks", description: "Keep track of new features or bug reports.", eyebrow: "ADMIN" %>
+
+<section class="task-composer card card-body mb-4">
+  <h2 class="h5 mb-3">Add a task</h2>
+  <% if @task.errors.any? %>
+    <div class="alert alert-danger" role="alert"><%= @task.errors.full_messages.to_sentence %></div>
+  <% end %>
+  <%= form_with model: [ :admin, @task ], class: "row g-3" do |form| %>
+    <div class="col-12 col-lg-4">
+      <%= form.label :title, class: "form-label" %>
+      <%= form.text_field :title, class: "form-control", required: true, maxlength: 240, placeholder: "What needs doing?" %>
+    </div>
+    <div class="col-12 col-lg-6">
+      <%= form.label :description, class: "form-label" %>
+      <%= form.text_area :description, class: "form-control", rows: 1, placeholder: "Add a few details (optional)" %>
+    </div>
+    <div class="col-12 col-lg-2 d-flex align-items-end">
+      <%= form.submit "Add task", class: "btn btn-primary w-100" %>
+    </div>
+  <% end %>
+</section>
+
+<div class="task-board" data-controller="task-board" data-task-board-reorder-url-value="<%= reorder_admin_tasks_path %>">
+  <% { "todo" => [ "To do", @todo_tasks ], "done" => [ "Done", @done_tasks ] }.each do |status, (label, tasks)| %>
+    <section class="task-lane" aria-label="<%= label %>">
+      <header class="task-lane-heading">
+        <h2><%= status.upcase %></h2>
+        <span class="task-count"><%= tasks.size %></span>
+      </header>
+      <div class="task-list" data-task-board-target="list" data-status="<%= status %>" data-action="dragover->task-board#dragOver drop->task-board#drop">
+        <% tasks.each do |task| %>
+          <article class="task-card" draggable="true" data-task-id="<%= task.id %>" data-action="dragstart->task-board#dragStart dragend->task-board#dragEnd">
+            <span class="task-grip" aria-hidden="true">⠿</span>
+            <h3><%= task.title %></h3>
+            <% if task.description.present? %><div class="task-description"><%= simple_format(task.description) %></div><% end %>
+            <div class="task-meta">
+              <span>By <%= task.created_by.email %></span>
+              <time datetime="<%= task.created_at.iso8601 %>">Created <%= l(task.created_at, format: :short) %></time>
+              <time datetime="<%= task.updated_at.iso8601 %>">Updated <%= l(task.updated_at, format: :short) %></time>
+            </div>
+            <details class="task-edit">
+              <summary>Edit</summary>
+              <%= form_with model: [ :admin, task ], class: "mt-2" do |form| %>
+                <%= form.text_field :title, class: "form-control mb-2", required: true, aria: { label: "Task title" } %>
+                <%= form.text_area :description, class: "form-control mb-2", rows: 2, aria: { label: "Task description" } %>
+                <div class="d-flex justify-content-between align-items-center">
+                  <%= form.submit "Save", class: "btn btn-sm btn-primary" %>
+                </div>
+              <% end %>
+              <%= button_to "Delete", [ :admin, task ], method: :delete, class: "btn btn-sm btn-outline-danger mt-2", form: { data: { turbo_confirm: "Delete this task?" } } %>
+            </details>
+          </article>
+        <% end %>
+        <% if tasks.empty? %><p class="task-empty">Drop tasks here</p><% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -286,6 +286,42 @@ ALTER SEQUENCE extcare.students_id_seq OWNED BY extcare.students.id;
 
 
 --
+-- Name: tasks; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.tasks (
+    id bigint NOT NULL,
+    title text NOT NULL,
+    description text,
+    created_by_id bigint NOT NULL,
+    status character varying DEFAULT 'todo'::character varying NOT NULL,
+    priority integer DEFAULT 0 NOT NULL,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL,
+    CONSTRAINT tasks_status_valid CHECK (((status)::text = ANY ((ARRAY['todo'::character varying, 'done'::character varying])::text[])))
+);
+
+
+--
+-- Name: tasks_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.tasks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.tasks_id_seq OWNED BY extcare.tasks.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: extcare; Owner: -
 --
 
@@ -354,6 +390,13 @@ ALTER TABLE ONLY extcare.students ALTER COLUMN id SET DEFAULT nextval('extcare.s
 
 
 --
+-- Name: tasks id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.tasks ALTER COLUMN id SET DEFAULT nextval('extcare.tasks_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
@@ -414,6 +457,14 @@ ALTER TABLE ONLY extcare.sessions
 
 ALTER TABLE ONLY extcare.students
     ADD CONSTRAINT students_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.tasks
+    ADD CONSTRAINT tasks_pkey PRIMARY KEY (id);
 
 
 --
@@ -523,6 +574,20 @@ CREATE INDEX index_students_on_last_name ON extcare.students USING btree (last_n
 
 
 --
+-- Name: index_tasks_on_created_by_id; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE INDEX index_tasks_on_created_by_id ON extcare.tasks USING btree (created_by_id);
+
+
+--
+-- Name: index_tasks_on_status_and_priority_and_id; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE INDEX index_tasks_on_status_and_priority_and_id ON extcare.tasks USING btree (status, priority, id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: extcare; Owner: -
 --
 
@@ -569,12 +634,21 @@ ALTER TABLE ONLY extcare.sessions
 
 
 --
+-- Name: tasks fk_rails_a362a150d3; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.tasks
+    ADD CONSTRAINT fk_rails_a362a150d3 FOREIGN KEY (created_by_id) REFERENCES extcare.users(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260925010000'),
 ('20260924040000'),
 ('20260924030000'),
 ('20260924020000'),

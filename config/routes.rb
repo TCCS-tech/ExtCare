@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     resources :checkins, only: %i[ index edit update destroy ]
     resources :billing_records, only: :index
     resources :extended_care_schedules, only: %i[ index create update destroy ]
+    resources :tasks, only: %i[ index create update destroy ] do
+      patch :reorder, on: :collection
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

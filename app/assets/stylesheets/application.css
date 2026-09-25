@@ -215,6 +215,128 @@ main.container {
   color: var(--school-navy);
 }
 
+.task-composer {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px #202d4c08;
+}
+
+.task-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.task-lane {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  background: #f0f1f4;
+}
+
+.task-lane-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.15rem 0 1rem;
+}
+
+.task-lane-heading h2 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+}
+
+.task-count {
+  display: grid;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border-radius: 99px;
+  background: #e0e2e8;
+  color: var(--school-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.task-list {
+  display: grid;
+  min-height: 8rem;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.task-card {
+  position: relative;
+  padding: 1rem 1rem 0.85rem 2rem;
+  border: 1px solid #e0e2e8;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 2px 5px #202d4c08;
+  cursor: grab;
+}
+
+.task-card.is-dragging {
+  opacity: 0.4;
+}
+
+.task-grip {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.55rem;
+  color: #9aa0ad;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.task-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.task-description {
+  margin: 0 0 0.75rem;
+  color: var(--school-muted);
+  font-size: 0.875rem;
+}
+
+.task-description p:last-child { margin-bottom: 0; }
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--school-muted);
+  font-size: 0.7rem;
+}
+
+.task-edit {
+  margin-top: 0.65rem;
+  color: var(--school-muted);
+  font-size: 0.8rem;
+}
+
+.task-edit summary { cursor: pointer; }
+
+.task-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #c9cbd2;
+  border-radius: 0.65rem;
+  color: var(--school-muted);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 767.98px) {
+  .task-board { grid-template-columns: 1fr; }
+}
+
 .home-action h3 {
   font-size: 1.6rem;
   font-weight: 650;
