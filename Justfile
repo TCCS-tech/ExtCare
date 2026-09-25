@@ -30,7 +30,6 @@ migrate:
     bin/rails db:migrate
 
 reset-db:
-    rm -rf db/structure.sql
     bin/rails db:drop    
     bin/rails db:create
     bin/rails db:migrate

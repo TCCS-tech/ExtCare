@@ -14,6 +14,7 @@ SET row_security = off;
 -- Name: extcare; Type: SCHEMA; Schema: -; Owner: -
 --
 
+CREATE SCHEMA extcare;
 
 
 --
@@ -562,7 +563,7 @@ ALTER TABLE ONLY extcare.sessions
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO extcare,public;
+SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20260924030000'),

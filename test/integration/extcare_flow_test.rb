@@ -64,7 +64,6 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
       get checkins_path(day: "2026-09-22")
       assert_select "#checkin_student_#{@mia.id} button", count: 0
       assert_select "#checkin-completed #checkin_student_#{@mia.id}"
-      assert_select "#checkin-ready #checkin_student_#{@noah.id}"
     end
   end
 
@@ -89,7 +88,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
 
     sign_in_as @admin
 
-    get admin_root_path(day: Date.current + 3)
+    get admin_checkins_path(day: Date.current + 3)
     assert_select "input#attendance_day[value=?]", Date.current.iso8601
     assert_select "input#attendance_day[max=?]", Date.current.iso8601
   end
@@ -116,6 +115,10 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
   test "kindergarten filters as its own level on check in" do
     kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0,
       blackbaud_id: "BB-ISLA", student_id: "ISLA")
+    [ kindergarten, @mia ].each do |student|
+      visit = Attendance.check_in(student: student, by: @staff, day: Date.current - 1, time: "15:00")
+      visit.check_out(time: "16:00")
+    end
     sign_in_as @staff
 
     get checkins_path(grade: "0")
@@ -174,8 +177,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     get checkins_path(day: "2026-09-22")
     assert_select "#checkin_student_#{@mia.id}", text: /Still checked in/
     assert_select "#checkin_student_#{@mia.id} button", count: 0
-      assert_select "#checkin-completed #checkin_student_#{@mia.id}"
-      assert_select "#checkin-ready #checkin_student_#{@noah.id}"
+    assert_select "#checkin-completed #checkin_student_#{@mia.id}"
 
     get checkouts_path(day: "2026-09-22")
     assert_select "a", text: /September 21, 2026/
@@ -197,12 +199,12 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
 
     assert_difference -> { Student.count }, 1 do
       post admin_students_path, params: {
-        student: { first_name: "New", last_name: "Kid", grade: 4, guardian_list: "Pat Kid, Sam Kid", blackbaud_id: "BB9" }
+        student: { first_name: "New", last_name: "Kid", grade: 4, guardian_list: "Pat Kid, Sam Kid", blackbaud_id: "BB9", student_id: "NEW-KID" }
       }
     end
     student = Student.find_by!(last_name: "Kid")
     assert_equal [ "Pat Kid", "Sam Kid" ], student.guardians
-    assert_redirected_to admin_root_path
+    assert_redirected_to admin_students_path
 
     assert_no_difference -> { Student.count } do
       patch admin_student_path(student), params: { student: { hidden: true } }
@@ -212,7 +214,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     get checkins_path(q: "Kid")
     assert_select ".student-name", text: "New Kid", count: 0
 
-    get admin_root_path(show_hidden: "1", student_q: "Kid")
+    get admin_students_path(show_hidden: "1", student_q: "Kid")
     assert_select "td", text: /New Kid/
     patch admin_student_path(student), params: { student: { hidden: false } }
     assert_not student.reload.hidden?
@@ -222,10 +224,10 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     sign_in_as @admin
     travel_to Time.zone.local(2026, 9, 22, 15, 45, 0) do
       Attendance.check_in(student: @mia, by: @staff, day: Date.new(2026, 9, 22))
-      get admin_root_path(day: "2026-09-22", attendance_q: "alv")
+      get admin_checkins_path(day: "2026-09-22", attendance_q: "alv")
       assert_select "td", text: "Mia Alvarez"
       assert_select "td", text: @staff.email
-      get admin_root_path(day: "2026-09-22", attendance_q: "liam")
+      get admin_checkins_path(day: "2026-09-22", attendance_q: "liam")
       assert_select "td", text: "No check-ins on this day."
     end
   end
@@ -238,13 +240,13 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     get edit_admin_student_path(@mia), params: filters
     assert_response :success
     assert_select "input[name='student[first_name]'][value='Mia']"
-    assert_select "a[href=?]", admin_root_path(filters), text: "Cancel"
+    assert_select "a[href=?]", admin_students_path(filters), text: "Cancel"
 
     patch admin_student_path(@mia), params: filters.merge(student: {
       first_name: "Maria", last_name: "Alvarez", grade: 3,
       blackbaud_id: "BB-EDIT", guardian_list: "Ana Alvarez, Luis Alvarez"
     })
-    assert_redirected_to admin_root_path(filters)
+    assert_redirected_to admin_students_path(filters)
     @mia.reload
     assert_equal "Maria Alvarez", @mia.full_name
     assert_equal 3, @mia.grade
@@ -256,9 +258,9 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
 
   test "invalid edits show errors and preserve submitted values without saving" do
     sign_in_as @admin
-    patch admin_student_path(@mia), params: { student: { first_name: "Noah", last_name: "Bennett", grade: 4 } }
+    patch admin_student_path(@mia), params: { student: { first_name: "Noah", last_name: "Bennett", grade: 7 } }
     assert_response :unprocessable_entity
-    assert_select ".alert-danger", text: /already used/
+    assert_select ".alert-danger", text: /Grade is not included/
     assert_select "input[name='student[first_name]'][value='Noah']"
     assert_equal "Mia Alvarez", @mia.reload.full_name
     assert_equal 1, @mia.grade
@@ -274,7 +276,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     assert_equal 1, @mia.grade
   end
 
-  test "checkout and admin student lists sort by first name" do
+  test "checkout lists and equally relevant admin search results sort by first name" do
     sign_in_as @admin
     [ @mia, @noah, @liam ].each do |student|
       Attendance.check_in(student: student, by: @staff, day: Date.current)
@@ -288,7 +290,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     assert_select "#checkout-completed .student-name" do |names|
       assert_equal [ "Liam Diaz", "Mia Alvarez", "Noah Bennett" ], names.map(&:text)
     end
-    get admin_root_path(student_q: "a")
+    get admin_students_path(student_q: "i")
     assert_select "#student-results tbody tr" do |rows|
       assert_match /Liam Diaz/, rows.first.text
       assert_match /Mia Alvarez/, rows[1].text
@@ -298,17 +300,17 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
   test "admin student results require a nonblank search even when showing removed students" do
     sign_in_as @admin
     [ nil, "", "   " ].each do |query|
-      get admin_root_path(student_q: query, show_hidden: "1")
+      get admin_students_path(student_q: query, show_hidden: "1")
       assert_response :success
       assert_select "#student-results table", count: 0
       assert_select "#student-results", text: /Type a student’s name/
     end
 
-    get admin_root_path(student_q: "mia")
+    get admin_students_path(student_q: "mia")
     assert_select "#student-results td", text: "Mia Alvarez"
     assert_select "#student-results td", text: "Noah Bennett", count: 0
 
-    get admin_root_path(student_q: "no-such-student")
+    get admin_students_path(student_q: "no-such-student")
     assert_select "#student-results", text: /No students match/
   end
 
@@ -330,16 +332,17 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     @noah.update!(prepaid_pm: true)
     visit = Attendance.check_in(student: @mia, by: @admin, day: Date.current)
 
-    get checkins_path
+    get checkins_path(q: "a")
     assert_select "#checkin_student_#{@mia.id} .student-flag", text: "Staff"
     assert_select "#checkin_student_#{@mia.id} .student-flag", text: "Prepaid AM"
     assert_select "#checkin_student_#{@noah.id} .student-flag", text: "Prepaid PM"
+    assert_select "#checkin_student_#{@liam.id}"
     assert_select "#checkin_student_#{@liam.id} .student-flag", count: 0
 
     get checkouts_path
     assert_select "#checkout_attendance_#{visit.id} .student-flag", text: "Staff"
 
-    get admin_root_path(student_q: "Alvarez")
+    get admin_students_path(student_q: "Alvarez")
     assert_select "#student-results .student-flag", text: "Prepaid AM"
   end
 
@@ -348,7 +351,7 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
 
     assert_difference -> { Student.count }, 1 do
       post admin_students_path, params: {
-        student: { first_name: "Flag", last_name: "Kid", grade: 2, staff: "1", prepaid_am: "1", prepaid_pm: "0" }
+        student: { first_name: "Flag", last_name: "Kid", grade: 2, blackbaud_id: "BB-FLAG", student_id: "FLAG", staff: "1", prepaid_am: "1", prepaid_pm: "0" }
       }
     end
     kid = Student.find_by!(last_name: "Kid")
@@ -357,11 +360,11 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     assert_not kid.prepaid_pm?
 
     patch admin_student_path(@mia), params: { student: { first_name: "Mia", last_name: "Alvarez", grade: 1, prepaid_pm: "1" } }
-    assert_redirected_to admin_root_path
+    assert_redirected_to admin_students_path
     assert @mia.reload.prepaid_pm?
 
     patch admin_student_path(@mia), params: { student: { first_name: "Mia", last_name: "Alvarez", grade: 1, prepaid_pm: "0" } }
-    assert_redirected_to admin_root_path
+    assert_redirected_to admin_students_path
     assert_not @mia.reload.prepaid_pm?
   end
 

@@ -6,16 +6,19 @@ default: &default
   password: postgres
   host: localhost
   port: 5432
-  schema_search_path: extcare,public  
+  schema_search_path: extcare
   variables:
     timezone: America/Los_Angeles
 
 development:
   <<: *default
+  # Avoid macOS GSS initialization in forked Rails test workers.
+  gssencmode: disable
   database: tccs_extcare_development
 
 test:
   <<: *default
+  gssencmode: disable
   database: tccs_extcare_test
 
 production:
