@@ -1,5 +1,14 @@
 <% content_for :title, "Billing" %>
-<%= render "shared/page_heading", title: "Daily billing", description: "Saved charges recorded per student.", eyebrow: "SCHOOL OFFICE" %>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <%= render "shared/page_heading", title: "Daily billing", description: "Saved charges recorded per student.", eyebrow: "SCHOOL OFFICE" %>
+  <%= form_with url: export_admin_billing_records_path, method: :get, class: "card card-body shadow-sm p-3 flex-row flex-wrap align-items-end gap-2", data: { turbo: false } do |form| %>
+    <div>
+      <%= form.label :month, "Export a month", class: "form-label mb-1" %>
+      <%= form.select :month, options_for_select((1..12).map { |month| [Date::MONTHNAMES[month], month] }), { include_blank: "Choose month" }, class: "form-select", required: true %>
+    </div>
+    <%= form.submit "Download XLSX", class: "btn btn-primary" %>
+  <% end %>
+</div>
 <%= form_with url: admin_billing_records_path, method: :get, class: "row g-2 align-items-end mb-3", data: { controller: "roster-filter", turbo_stream: true } do |form| %>
   <div class="col-auto"><%= form.label :day, "Date", class: "form-label" %><%= form.date_field :day, value: @day, class: "form-control", data: { action: "change->roster-filter#submitNow" } %></div>
   <div class="col-auto"><%= form.label :month, "Month", class: "form-label" %><%= form.select :month, options_for_select([ ["Any month", ""] ] + (1..12).map { |month| [Date::MONTHNAMES[month], month] }, @month), {}, class: "form-select", data: { action: "change->roster-filter#submitNow" } %></div>

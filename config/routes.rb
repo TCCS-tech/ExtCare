@@ -16,7 +16,9 @@ Rails.application.routes.draw do
     resources :users, only: %i[ index create update ]
     post "users/invite", to: "users#invite", as: :invite_user
     resources :checkins, only: %i[ index edit update destroy ]
-    resources :billing_records, only: :index
+    resources :billing_records, only: :index do
+      get :export, on: :collection
+    end
     resources :extended_care_schedules, only: %i[ index create update destroy ]
     resources :tasks, only: %i[ index create update destroy ] do
       patch :reorder, on: :collection
