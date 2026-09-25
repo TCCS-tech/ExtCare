@@ -6,7 +6,15 @@ class Attendance < ApplicationRecord
 
   validates :day, :checkin, presence: true
 
-  after_update_commit :recalculate_billing, if: :saved_change_to_checkout?
+  # Billing is a stored snapshot of the visit list, so it has to be re-derived
+  # whenever that list changes shape. The AM/PM split and the PM minute count
+  # both read `checkin`, and re-dating a visit moves a charge between two days,
+  # so those edits count too, not just the checkout that used to be the only
+  # trigger here.
+  BILLING_ATTRIBUTES = %i[day checkin checkout].freeze
+
+  after_update_commit :recalculate_billing, if: :saved_change_to_billing_attribute?
+  after_destroy_commit :recalculate_billing
 
   scope :open, -> { where(checkout: nil) }
   scope :on, ->(day) { where(day: day) }
@@ -80,7 +88,21 @@ class Attendance < ApplicationRecord
 
   private
 
+  def saved_change_to_billing_attribute?
+    BILLING_ATTRIBUTES.any? { |name| saved_change_to_attribute?(name) }
+  end
+
+  # The days this change can move a charge on or off: the record's own day, plus
+  # the day it used to be when an admin re-dates a visit.
+  def billing_days
+    return [ day ] unless saved_change_to_day?
+
+    [ attribute_before_last_save("day"), day ].uniq
+  end
+
   def recalculate_billing
-    BillingRecord.recalculate!(student: student, day: day)
+    billing_days.each do |billing_day|
+      BillingRecord.recalculate!(student: student, day: billing_day)
+    end
   end
 end

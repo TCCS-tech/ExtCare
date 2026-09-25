@@ -4,10 +4,14 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
   setup do
     @staff = users(:staff)
     @admin = users(:admin)
-    @mia = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1)
-    @noah = Student.create!(first_name: "Noah", last_name: "Bennett", grade: 1)
-    @liam = Student.create!(first_name: "Liam", last_name: "Diaz", grade: 2)
-    @hidden = Student.create!(first_name: "Nora", last_name: "Vance", grade: 1, hidden: true)
+    @mia = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1,
+      blackbaud_id: "BB-MIA", student_id: "MIA")
+    @noah = Student.create!(first_name: "Noah", last_name: "Bennett", grade: 1,
+      blackbaud_id: "BB-NOAH", student_id: "NOAH")
+    @liam = Student.create!(first_name: "Liam", last_name: "Diaz", grade: 2,
+      blackbaud_id: "BB-LIAM", student_id: "LIAM")
+    @hidden = Student.create!(first_name: "Nora", last_name: "Vance", grade: 1, hidden: true,
+      blackbaud_id: "BB-NORA", student_id: "NORA")
   end
 
   test "visitors sign in before using the app" do
@@ -110,7 +114,8 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "kindergarten filters as its own level on check in" do
-    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
+    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0,
+      blackbaud_id: "BB-ISLA", student_id: "ISLA")
     sign_in_as @staff
 
     get checkins_path(grade: "0")
@@ -129,7 +134,8 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "kindergarten filters on check out" do
-    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
+    kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0,
+      blackbaud_id: "BB-ISLA-2", student_id: "ISLA-2")
     sign_in_as @staff
     Attendance.check_in(student: kindergarten, by: @staff, day: Date.current)
 

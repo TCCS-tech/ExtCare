@@ -3,7 +3,8 @@ require "test_helper"
 class AttendanceTest < ActiveSupport::TestCase
   setup do
     @staff = users(:staff)
-    @student = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1)
+    @student = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1,
+      blackbaud_id: "BB-MIA", student_id: "MIA")
     @day = Date.new(2026, 9, 22)
   end
 

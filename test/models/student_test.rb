@@ -2,8 +2,10 @@ require "test_helper"
 
 class StudentTest < ActiveSupport::TestCase
   setup do
-    @kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
-    @first = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1)
+    @kindergarten = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0,
+      blackbaud_id: "BB-ISLA", student_id: "ISLA")
+    @first = Student.create!(first_name: "Mia", last_name: "Alvarez", grade: 1,
+      blackbaud_id: "BB-MIA", student_id: "MIA")
   end
 
   test "kindergarten is stored as grade 0 and reads as K" do
@@ -14,8 +16,10 @@ class StudentTest < ActiveSupport::TestCase
   end
 
   test "grades outside kindergarten through sixth are rejected" do
-    assert_not Student.new(first_name: "Isla", last_name: "Torres", grade: -1).valid?
-    assert_not Student.new(first_name: "Isla", last_name: "Underwood", grade: 7).valid?
+    assert_not Student.new(first_name: "Isla", last_name: "Torres", grade: -1,
+      blackbaud_id: "BB-TORRES", student_id: "TORRES").valid?
+    assert_not Student.new(first_name: "Isla", last_name: "Underwood", grade: 7,
+      blackbaud_id: "BB-UNDERWOOD", student_id: "UNDERWOOD").valid?
   end
 
   test "grade levels are listed kindergarten first" do

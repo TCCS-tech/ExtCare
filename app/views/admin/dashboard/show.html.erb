@@ -4,8 +4,14 @@
 <div class="row g-3">
   <div class="col-12 col-md-6">
     <%= link_to admin_checkins_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
-      <h2 class="h4">Check-ins</h2>
+      <h2 class="h4">Attendance</h2>
       <p class="text-body-secondary mb-0">Review daily check-in and check-out records.</p>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-6">
+    <%= link_to admin_billing_records_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">Billing</h2>
+      <p class="text-body-secondary mb-0">Review daily charges by Blackbaud account.</p>
     <% end %>
   </div>
   <div class="col-12 col-md-6">
@@ -21,12 +27,6 @@
     <% end %>
   </div>
   <div class="col-12 col-md-6">
-    <%= link_to admin_billing_records_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
-      <h2 class="h4">Billing</h2>
-      <p class="text-body-secondary mb-0">Review daily charges by Blackbaud account.</p>
-    <% end %>
-  </div>
-  <div class="col-12 col-md-6">
     <%= link_to admin_extended_care_schedules_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
       <h2 class="h4">Care schedule</h2>
       <p class="text-body-secondary mb-0">Set default and date-specific extended care hours.</p>
@@ -37,7 +37,7 @@
       <div class="card card-body shadow-sm h-100">
         <h2 class="h4">Dev</h2>
         <p class="text-body-secondary">Development data tools.</p>
-        <%= button_to "Delete All Attendance", admin_clear_attendance_path, method: :post, class: "btn btn-outline-danger align-self-start", data: { turbo_confirm: "Delete every attendance record? This cannot be undone." } %>
+        <%= button_to "Reset Attendance and Billing", admin_clear_attendance_path, method: :post, class: "btn btn-outline-danger align-self-start", data: { turbo_confirm: "Delete every attendance and billing record? This cannot be undone." } %>
       </div>
     </div>
   <% end %>

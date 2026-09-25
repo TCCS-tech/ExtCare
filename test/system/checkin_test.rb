@@ -3,9 +3,12 @@ require "application_system_test_case"
 class CheckinTest < ApplicationSystemTestCase
   setup do
     page.driver.browser.manage.window.resize_to(1400, 1000)
-    @zara = Student.create!(first_name: "Zara", last_name: "Quill", grade: 4)
-    @owen = Student.create!(first_name: "Owen", last_name: "Moss", grade: 1)
-    @isla = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0)
+    @zara = Student.create!(first_name: "Zara", last_name: "Quill", grade: 4,
+      blackbaud_id: "BB-ZARA", student_id: "ZARA")
+    @owen = Student.create!(first_name: "Owen", last_name: "Moss", grade: 1,
+      blackbaud_id: "BB-OWEN", student_id: "OWEN")
+    @isla = Student.create!(first_name: "Isla", last_name: "Thompson", grade: 0,
+      blackbaud_id: "BB-ISLA", student_id: "ISLA")
   end
 
   test "staff checks students in and out from the lists" do

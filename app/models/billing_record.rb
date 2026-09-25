@@ -8,14 +8,25 @@ class BillingRecord < ApplicationRecord
     total_cents / 100.0
   end
 
+  # Billing is a stored snapshot of a day's visits, so every recompute rebuilds
+  # it from the whole visit list. With nothing billable left the stored row is
+  # wrong rather than merely empty, so it goes away with the visits.
   def self.recalculate!(student:, day:)
     visits = Attendance.on(day).where(student_id: student.id).order(:checkin).to_a
-    amounts = calculate_amounts(visits.select { |visit| visit.checkout.present? }, day: day, student: student)
+    billed = visits.reject(&:open?)
+    record = find_by(student: student, day: day)
+
+    if billed.empty?
+      record&.destroy!
+      return
+    end
+
+    amounts = calculate_amounts(billed, day: day, student: student)
     # if student.staff? || student.prepaid_am? || student.prepaid_pm?
     #   amounts = { am_cents: 0, pm_cents: 0, late_fee_cents: 0, total_cents: 0 }
     # end
     amounts[:notes] = visit_summary(visits)
-    record = find_or_initialize_by(student: student, day: day)
+    record ||= new(student: student, day: day)
     record.assign_attributes(amounts)
     record.save!
     record
