@@ -4,7 +4,7 @@
 
 <div class="card card-body shadow-sm mb-4">
   <h2 class="h4">Add a user</h2>
-  <% if @new_user.errors.any? %>
+  <% if @new_user.errors.any? && !@invite_form %>
     <div class="alert alert-danger"><%= @new_user.errors.full_messages.to_sentence %></div>
   <% end %>
   <%= form_with model: @new_user, url: admin_users_path do |form| %>
@@ -26,6 +26,32 @@
         <%= form.select :role, User.roles.keys.map { |role| [ role.titleize, role ] }, {}, class: "form-select" %>
       </div>
       <div class="col-12"><%= form.submit "Add user", class: "btn btn-primary" %></div>
+    </div>
+  <% end %>
+</div>
+
+<div class="card card-body shadow-sm mb-4">
+  <h2 class="h4">Invite a user</h2>
+  <p>Creates an account and generates a password setup link. COPY the email text below and SEND IT to the new user using your personal email.</p>
+  <% if @invite_text.present? %>
+    <div class="alert alert-success"><%= @invite_message %></div>
+    <label for="invite-email-text" class="form-label">Email text</label>
+    <textarea id="invite-email-text" class="form-control" rows="7" readonly onclick="this.select()"><%= @invite_text %></textarea>
+  <% end %>
+  <% if @new_user.errors.any? %>
+    <div class="alert alert-danger"><%= @new_user.errors.full_messages.to_sentence %></div>
+  <% end %>
+  <%= form_with model: @new_user, url: admin_invite_user_path do |form| %>
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-6">
+        <%= form.label :email, class: "form-label" %>
+        <%= form.email_field :email, class: "form-control", required: true, autocomplete: "username" %>
+      </div>
+      <div class="col-12 col-md-3">
+        <%= form.label :role, class: "form-label" %>
+        <%= form.select :role, User.roles.keys.map { |role| [ role.titleize, role ] }, {}, class: "form-select" %>
+      </div>
+      <div class="col-12 col-md-3"><%= form.submit "Create invitation", class: "btn btn-outline-primary" %></div>
     </div>
   <% end %>
 </div>
