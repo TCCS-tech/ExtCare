@@ -3,20 +3,31 @@
   <head>
     <title><%= content_for(:title) || "ExtendedCare" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#17324d">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ExtendedCare">
     <meta name="application-name" content="ExtendedCare">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/icon-192.png" sizes="192x192">
+    <meta name="msapplication-TileColor" content="#17324d">
+    <meta name="msapplication-TileImage" content="/icon-192.png">
 
     <%= stylesheet_link_tag "bootstrap.min", "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => navigator.serviceWorker.register("/service-worker.js"));
+      }
+    </script>
   </head>
 
   <body class="bg-body-tertiary <%= content_for(:body_class) %>">

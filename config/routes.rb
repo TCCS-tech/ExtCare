@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
+  get "/service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+
   root "home#show"
 
   resource :session
