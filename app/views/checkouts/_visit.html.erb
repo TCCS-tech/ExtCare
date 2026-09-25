@@ -22,7 +22,7 @@
         <%= button_to "Check out", checkouts_path,
               params: { attendance_id: visit.id, day: day, grade: grade, q: query, checkout_time: (day < Date.current ? "15:00" : nil) },
               class: "btn btn-primary btn-lg checkout-submit-button",
-              form: { class: "m-0" } %>
+              form: { class: "m-0", data: { action: "submit->checkin-time#submit" } } %>
         <button type="button" class="btn btn-outline-secondary btn-lg pickup-details-button" data-bs-toggle="modal" data-bs-target="#pickup-modal-<%= visit.id %>" aria-label="Add pickup name for <%= visit.student.full_name %>" title="Add pickup name">
           <span aria-hidden="true">…</span>
         </button>

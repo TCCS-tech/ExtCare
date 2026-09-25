@@ -34,7 +34,7 @@
         <%= button_to "Check in", checkins_path,
               params: { student_id: student.id, day: day, grade: grade, q: query, checkin_time: (day < Date.current ? "15:00" : nil) },
               class: "btn btn-primary btn-lg",
-              form: { class: "m-0" } %>
+              form: { class: "m-0", data: { action: "submit->checkin-time#submit" } } %>
       <% end %>
     </div>
   </div>

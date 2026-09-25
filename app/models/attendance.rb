@@ -24,9 +24,9 @@ class Attendance < ApplicationRecord
   end
 
   def self.check_in(student:, by:, day:, time: nil)
-    if day < Date.current && time.present? && !valid_checkin_time?(time)
+    if time.present? && !valid_checkin_time?(time)
       record = new(student: student, day: day, checkin_by: by.id)
-      record.errors.add(:base, "Choose a valid check-in time for this past date.")
+      record.errors.add(:base, "Choose a valid check-in time.")
       return record
     end
 
@@ -55,12 +55,8 @@ class Attendance < ApplicationRecord
   end
 
   def check_out(time: nil)
-    stamped = if day == Date.current
-      Time.current
-    else
-      Attendance.stamp(day, time: time)
-    end
-    stamped = checkin + 1.minute if day == Date.current && stamped <= checkin
+    stamped = Attendance.stamp(day, time: time)
+    stamped = checkin + 1.minute if time.blank? && day == Date.current && stamped <= checkin
     return false if stamped <= checkin
 
     update!(checkout: stamped)
@@ -68,7 +64,7 @@ class Attendance < ApplicationRecord
 
   def self.stamp(day, time: nil)
     now = Time.current
-    return now if day == now.to_date
+    return now if day == now.to_date && time.blank?
 
     time = now.strftime("%H:%M") if time.blank?
     hour, minute = time.to_s.split(":", 3).first(2).map { |part| Integer(part, 10) }

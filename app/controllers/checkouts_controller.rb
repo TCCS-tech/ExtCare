@@ -22,8 +22,8 @@ class CheckoutsController < ApplicationController
   def create
     visit = Attendance.open.find(params.expect(:attendance_id))
     time = params[:checkout_time]
-    if visit.day < Date.current && !time.to_s.match?(/\A(?:[01]\d|2[0-3]):[0-5]\d\z/)
-      redirect_to checkouts_path(day: visit.day, grade: params[:grade], q: params[:q]), alert: "Choose a valid check-out time for this past date."
+    if (visit.day < Date.current || time.present?) && !time.to_s.match?(/\A(?:[01]\d|2[0-3]):[0-5]\d\z/)
+      redirect_to checkouts_path(day: visit.day, grade: params[:grade], q: params[:q]), alert: "Choose a valid check-out time."
       return
     end
     unless visit.check_out(time: time)

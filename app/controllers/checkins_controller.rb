@@ -23,8 +23,8 @@ class CheckinsController < ApplicationController
   def create
     student = Student.visible.find(params.expect(:student_id))
     day = SchoolDay.parse(params[:day])
-    if day < Date.current && !params[:checkin_time].to_s.match?(/\A(?:[01]\d|2[0-3]):[0-5]\d\z/)
-      redirect_to checkins_path(day: day, grade: params[:grade], q: params[:q]), alert: "Choose a valid check-in time for this past date."
+    if (day < Date.current || params[:checkin_time].present?) && !params[:checkin_time].to_s.match?(/\A(?:[01]\d|2[0-3]):[0-5]\d\z/)
+      redirect_to checkins_path(day: day, grade: params[:grade], q: params[:q]), alert: "Choose a valid check-in time."
       return
     end
     attendance = Attendance.check_in(student: student, by: Current.user, day: day, time: params[:checkin_time])
