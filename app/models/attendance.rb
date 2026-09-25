@@ -13,6 +13,7 @@ class Attendance < ApplicationRecord
   # trigger here.
   BILLING_ATTRIBUTES = %i[day checkin checkout].freeze
 
+  after_create_commit :recalculate_billing
   after_update_commit :recalculate_billing, if: :saved_change_to_billing_attribute?
   after_destroy_commit :recalculate_billing
 

@@ -37,4 +37,7 @@ reset-db:
     bin/rails runner script/import_students.rb 
     
 script *cmd:
-    bin/rails runner script/${cmd}.rb
+    bin/rails runner script/{{cmd}}.rb
+
+rails *args:
+    bin/rails {{args}}
