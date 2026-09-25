@@ -391,12 +391,26 @@ main.container {
 }
 
 .task-description {
-  margin: 0 0 0.75rem;
+  margin-top: 0.45rem;
   color: var(--school-muted);
   font-size: 0.875rem;
 }
 
 .task-description p:last-child { margin-bottom: 0; }
+
+.task-description-disclosure {
+  margin: 0.25rem 0 0.65rem;
+  color: var(--school-muted);
+  font-size: 0.78rem;
+}
+
+.task-description-disclosure summary {
+  width: fit-content;
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-description-disclosure summary:hover { color: var(--school-navy); }
 
 .task-meta {
   display: flex;

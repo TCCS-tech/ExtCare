@@ -49,7 +49,12 @@
           <article class="task-card" draggable="<%= @query.blank? %>" data-task-id="<%= task.id %>" data-action="<%= "dragstart->task-board#dragStart dragend->task-board#dragEnd" if @query.blank? %>">
             <span class="task-grip" aria-hidden="true">⠿</span>
             <h3><%= task.title %></h3>
-            <% if task.description.present? %><div class="task-description"><%= simple_format(task.description) %></div><% end %>
+            <% if task.description.present? %>
+              <details class="task-description-disclosure">
+                <summary>Description</summary>
+                <div class="task-description"><%= simple_format(task.description) %></div>
+              </details>
+            <% end %>
             <div class="task-meta">
               <span>By <%= task.created_by.email %></span>
               <time datetime="<%= task.created_at.iso8601 %>">Created <%= l(task.created_at, format: :short) %></time>
