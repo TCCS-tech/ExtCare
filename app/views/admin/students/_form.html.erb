@@ -37,6 +37,10 @@
       <%= form.text_field :additional_adult_list, class: "form-control", placeholder: "Names, separated by commas", autocomplete: "off" %>
     </div>
     <div class="col-12">
+      <%= form.label :alert, class: "form-label" %>
+      <%= form.text_area :alert, class: "form-control", rows: 3 %>
+    </div>
+    <div class="col-12">
       <%= form.label :notes, class: "form-label" %>
       <%= form.text_area :notes, class: "form-control", rows: 4 %>
     </div>

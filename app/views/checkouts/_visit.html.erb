@@ -4,6 +4,9 @@
     <div>
       <div class="d-flex flex-wrap align-items-center gap-2">
         <span class="student-name fs-5 fw-semibold"><%= visit.student.full_name %></span>
+        <% if visit.student.alert.present? %>
+          <span class="badge text-bg-danger" role="img" aria-label="Student alert" title="Student alert">&#x26A0; Alert</span>
+        <% end %>
         <span class="badge text-bg-light">Grade <%= visit.student.grade_label %></span>
         <% if visit.student.hidden? %>
           <span class="badge text-bg-secondary">Removed</span>
@@ -39,6 +42,12 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+              <% if visit.student.alert.present? %>
+                <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+                  <span aria-hidden="true">&#x26A0;</span>
+                  <div><%= simple_format(visit.student.alert, class: "mb-0") %></div>
+                </div>
+              <% end %>
               <% if visit.student.guardians.any? %>
                 <div class="mb-3">
                   <div class="form-label mb-1">Guardians</div>

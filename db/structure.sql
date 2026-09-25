@@ -14,7 +14,6 @@ SET row_security = off;
 -- Name: extcare; Type: SCHEMA; Schema: -; Owner: -
 --
 
-CREATE SCHEMA extcare;
 
 
 --
@@ -259,7 +258,8 @@ CREATE TABLE extcare.students (
     hidden boolean DEFAULT false NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
     updated_at timestamp(6) with time zone NOT NULL,
-    additional_adults text[] DEFAULT '{}'::text[] NOT NULL
+    additional_adults text[] DEFAULT '{}'::text[] NOT NULL,
+    alert text
 );
 
 
@@ -565,6 +565,7 @@ ALTER TABLE ONLY extcare.sessions
 SET search_path TO extcare,public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260924030000'),
 ('20260924020000'),
 ('20260924010000'),
 ('20260923012633'),
