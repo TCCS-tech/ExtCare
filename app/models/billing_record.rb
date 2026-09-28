@@ -69,7 +69,7 @@ class BillingRecord < ApplicationRecord
   def self.visit_summary(visits)
     visits.map do |visit|
       checked_in = visit.checkin.in_time_zone.strftime("%-I:%M%P").gsub("pm","p")
-      checked_out = visit.checkout&.in_time_zone&.strftime("%-I:%M%P").gsub("pm","p") || "open"
+      checked_out = visit.checkout&.in_time_zone&.strftime("%-I:%M%P")&.gsub("pm", "p") || "open"
       "#{checked_in}–#{checked_out}"
     end.join("; ")
   end

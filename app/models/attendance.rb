@@ -13,9 +13,11 @@ class Attendance < ApplicationRecord
   # trigger here.
   BILLING_ATTRIBUTES = %i[day checkin checkout].freeze
 
-  after_create_commit :recalculate_billing
-  after_update_commit :recalculate_billing, if: :saved_change_to_billing_attribute?
-  after_destroy_commit :recalculate_billing
+  # Commit callbacks with the same filter method can be deduplicated by Rails,
+  # so give each lifecycle callback its own entry point.
+  after_create_commit :recalculate_billing_after_create
+  after_update_commit :recalculate_billing_after_update, if: :saved_change_to_billing_attribute?
+  after_destroy_commit :recalculate_billing_after_destroy
 
   scope :open, -> { where(checkout: nil) }
   scope :on, ->(day) { where(day: day) }
@@ -101,5 +103,17 @@ class Attendance < ApplicationRecord
     billing_days.each do |billing_day|
       BillingRecord.recalculate!(student: student, day: billing_day)
     end
+  end
+
+  def recalculate_billing_after_create
+    recalculate_billing
+  end
+
+  def recalculate_billing_after_update
+    recalculate_billing
+  end
+
+  def recalculate_billing_after_destroy
+    recalculate_billing
   end
 end
