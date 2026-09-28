@@ -21,7 +21,11 @@ class Admin::BaseController < ApplicationController
       else
         Student.named(@student_q).in_grade(@grade).ordered_by_name
       end
-      students = students.where(@billing_category => true) if @billing_category.present? && @billing_category != "all"
+      if @billing_category == "prepaid_pm"
+        students = students.where(prepaid_pm: true, prepaid_am: false)
+      elsif @billing_category.present? && @billing_category != "all"
+        students = students.where(@billing_category => true)
+      end
       students = students.visible unless @show_hidden
       @students = students
       @attendances = Attendance.on(@day)
