@@ -1,6 +1,7 @@
 class CheckinsController < ApplicationController
   def index
     @day = SchoolDay.parse(params[:day])
+    @care_schedule = ExtendedCareSchedule.for_day(@day)
     @grade = params[:grade].presence
     @q = params[:q].to_s
     students = Student.visible.in_grade(@grade)

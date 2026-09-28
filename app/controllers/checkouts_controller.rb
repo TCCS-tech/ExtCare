@@ -1,6 +1,7 @@
 class CheckoutsController < ApplicationController
   def index
     @day = SchoolDay.parse(params[:day])
+    @care_schedule = ExtendedCareSchedule.for_day(@day)
     @grade = params[:grade].presence
     @q = params[:q].to_s
     all_visits = Attendance.on(@day)

@@ -1,5 +1,5 @@
 <% content_for :title, "Check out" %>
-<%= render "shared/page_heading", title: "Check out", description: "Ready to head home? Record a student’s pickup.", eyebrow: "STUDENT ATTENDANCE" %>
+<%= render "shared/page_heading", title: "Check out", description: "Care schedule for #{@day.strftime("%m/%d/%Y")}: #{l(@care_schedule.start_time, format: :check)}–#{l(@care_schedule.end_time, format: :check)}.", eyebrow: "STUDENT ATTENDANCE" %>
 
 <div data-controller="attendance-lists checkin-time" data-checkin-time-day-value="<%= @day.iso8601 %>" data-action="turbo:before-cache@document->attendance-lists#finishTransitions">
   <%= render "shared/day_toolbar", route: :checkouts_path, day: @day, grade: @grade, query: @q, autofocus: true %>

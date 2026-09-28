@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "query", "grade", "focus", "clearButton", "form" ]
+  static targets = [ "query", "grade", "billingCategory", "focus", "clearButton", "form" ]
 
   connect() {
     if (!this.hasQueryTarget || this.queryTarget.dataset.autofocus !== "true") return
@@ -42,9 +42,22 @@ export default class extends Controller {
   submitGrade(event) {
     clearTimeout(this.timer)
     const grade = event.params.grade
-    this.gradeTarget.value = grade === "all" || grade == null ? "" : grade
+    const allGrade = this.element.dataset.rosterFilterAllGradeValue
+    this.gradeTarget.value = grade === "all" && allGrade ? allGrade : grade === "all" || grade == null ? "" : grade
     this.element.querySelectorAll("[data-roster-filter-grade-param]").forEach(button => {
       const active = button.dataset.rosterFilterGradeParam === (this.gradeTarget.value || "all")
+      button.classList.toggle("btn-primary", active)
+      button.classList.toggle("btn-outline-primary", !active)
+      button.setAttribute("aria-pressed", active)
+    })
+    this.submitField(this.queryTarget)
+  }
+
+  submitBillingCategory(event) {
+    clearTimeout(this.timer)
+    this.billingCategoryTarget.value = event.params.category
+    this.element.querySelectorAll("[data-roster-filter-category-param]").forEach(button => {
+      const active = button.dataset.rosterFilterCategoryParam === this.billingCategoryTarget.value
       button.classList.toggle("btn-primary", active)
       button.classList.toggle("btn-outline-primary", !active)
       button.setAttribute("aria-pressed", active)

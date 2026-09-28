@@ -10,9 +10,11 @@
   <section class="student-search-panel" aria-labelledby="student-search-heading">
     <h2 id="student-search-heading" class="h4">Find a student</h2>
     <p class="text-body-secondary">Search to view or update student details, or <%= link_to "add", new_admin_student_path(admin_filter_params), aria: { label: "Add a new student" } %> a new student.</p>
-    <%= form_with url: admin_students_path, method: :get, role: "search", data: { controller: "roster-filter", turbo_action: "advance", turbo_frame: "student-search-results" } do %>
+    <%= form_with url: admin_students_path, method: :get, role: "search", data: { controller: "roster-filter", roster_filter_all_grade_value: "all", turbo_action: "advance", turbo_frame: "student-search-results" } do %>
       <%= hidden_field_tag :day, @day %>
       <%= hidden_field_tag :attendance_q, @attendance_q %>
+      <%= hidden_field_tag :grade, @grade, data: { roster_filter_target: "grade" } %>
+      <%= hidden_field_tag :billing_category, @billing_category, data: { roster_filter_target: "billingCategory" } %>
       <%= hidden_field_tag :focus, @focus, data: { roster_filter_target: "focus" } %>
       <%= label_tag :student_q, "Student name", class: "form-label fw-semibold" %>
       <div class="student-search-inputs">
@@ -20,6 +22,22 @@
         <%= button_tag "Search", class: "btn btn-primary" %>
       </div>
       <p id="student-search-hint" class="form-text mt-2">Search with part of a name. For example, “a c” puts first names starting with A and last names starting with C first, then shows broader matches.</p>
+      <div class="d-flex flex-wrap gap-2 mt-3" role="group" aria-label="Filter by grade">
+        <% all_grades_active = @grade.blank? || @grade == "all" %>
+        <%= button_tag "All", type: "button", aria: { pressed: all_grades_active }, class: "btn #{all_grades_active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: "all" } %>
+        <% Student.grade_options.each do |label, number| %>
+          <% active = @grade.to_s == number.to_s %>
+          <%= button_tag label, type: "button", aria: { pressed: active }, class: "btn #{active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: number } %>
+        <% end %>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-3" role="group" aria-label="Filter by billing category">
+        <% all_categories_active = @billing_category.blank? || @billing_category == "all" %>
+        <%= button_tag "All categories", type: "button", aria: { pressed: all_categories_active }, class: "btn #{all_categories_active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitBillingCategory", roster_filter_category_param: "all" } %>
+        <% Student::FLAGS.each do |attribute, label| %>
+          <% active = @billing_category == attribute %>
+          <%= button_tag label, type: "button", aria: { pressed: active }, class: "btn #{active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitBillingCategory", roster_filter_category_param: attribute } %>
+        <% end %>
+      </div>
       <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
         <div class="form-check mb-0">
           <%= check_box_tag :show_hidden, "1", @show_hidden, class: "form-check-input", id: "show_hidden", data: { action: "change->roster-filter#submitNow" } %>
@@ -34,15 +52,15 @@
 
 <%= turbo_frame_tag "student-search-results", target: "_top" do %>
   <section id="student-results" class="student-results" aria-label="Search results">
-    <% if @student_q.blank? %>
+    <% if @student_q.blank? && @grade.blank? %>
       <div class="student-search-empty">
         <h2 class="h5">Find a student to get started</h2>
         <p class="text-body-secondary mb-0">Type a student’s name above to find and manage their record.</p>
       </div>
     <% elsif @students.empty? %>
       <div class="student-search-empty">
-        <h2 class="h5">No students match “<%= @student_q %>”</h2>
-        <p class="text-body-secondary mb-0">Try a different spelling or part of their name<%= @show_hidden ? "." : ", or include removed students." %></p>
+        <h2 class="h5">No students match these filters</h2>
+        <p class="text-body-secondary mb-0">Try a different name or grade<%= @show_hidden ? "." : ", or include removed students." %></p>
         <p class="mt-3 mb-0">New to ExtendedCare? <%= link_to "Add a new student", new_admin_student_path(admin_filter_params) %></p>
       </div>
     <% else %>

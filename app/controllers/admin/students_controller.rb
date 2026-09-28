@@ -50,6 +50,8 @@ class Admin::StudentsController < Admin::BaseController
     def filter_params
       {
         student_q: params[:student_q].presence,
+        grade: params[:grade].presence,
+        billing_category: params[:billing_category].presence,
         attendance_q: params[:attendance_q].presence,
         day: params[:day].presence,
         show_hidden: params[:show_hidden].presence,

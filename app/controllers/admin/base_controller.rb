@@ -9,11 +9,19 @@ class Admin::BaseController < ApplicationController
     def load_dashboard
       @day = SchoolDay.parse(params[:day])
       @student_q = params[:student_q].to_s
+      @grade = params[:grade].presence
+      @billing_category = params[:billing_category].presence
+      @billing_category = nil unless @billing_category == "all" || Student::FLAGS.any? { |attribute, _| attribute == @billing_category }
       @attendance_q = params[:attendance_q].to_s
       @show_hidden = params[:show_hidden] == "1"
       @focus = params[:focus].to_s
       @student ||= Student.new
-      students = @student_q.blank? ? Student.none : Student.named(@student_q).ordered_by_name
+      students = if @student_q.blank? && @grade.blank? && @billing_category.blank?
+        Student.none
+      else
+        Student.named(@student_q).in_grade(@grade).ordered_by_name
+      end
+      students = students.where(@billing_category => true) if @billing_category.present? && @billing_category != "all"
       students = students.visible unless @show_hidden
       @students = students
       @attendances = Attendance.on(@day)
@@ -26,6 +34,8 @@ class Admin::BaseController < ApplicationController
     def admin_filter_params
       {
         student_q: @student_q.presence,
+        grade: @grade,
+        billing_category: @billing_category,
         attendance_q: @attendance_q.presence,
         day: @day,
         show_hidden: ("1" if @show_hidden)
