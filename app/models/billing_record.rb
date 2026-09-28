@@ -50,7 +50,7 @@ class BillingRecord < ApplicationRecord
     extra_half_hour_blocks = (extra_minutes + 29) / 30
     pm_cents = pm_minutes.positive? ? 1_000 + extra_half_hour_blocks * 500 : 0
     pm_cents = student.staff? || student.prepaid_pm? ? 0 : pm_cents
-    
+
     late_fee_cents = 0
     final_checkout = pm_visits.map(&:checkout).max
     if final_checkout
