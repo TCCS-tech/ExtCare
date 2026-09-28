@@ -18,7 +18,7 @@
         <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="Adjust <%= time_label.downcase %>" title="Adjust <%= time_label.downcase %>" data-checkin-time-target="adjustButton" data-action="checkin-time#showAdjustment">
           <span aria-hidden="true">&#x23F1;</span>
         </button>
-        <input type="time" step="300" class="form-control form-control-sm" aria-label="<%= time_label %>" data-checkin-time-target="field" data-action="change->checkin-time#change" hidden>
+        <input type="time" class="form-control form-control-sm" aria-label="<%= time_label %>" data-checkin-time-target="field" data-action="change->checkin-time#change" hidden>
         <button type="button" class="btn btn-sm btn-link p-0" aria-label="Use current time" title="Use current time" data-checkin-time-target="resetButton" data-action="checkin-time#useCurrentTime" hidden>
           <span aria-hidden="true">&#x21BA;</span>
         </button>

@@ -141,7 +141,8 @@ CREATE TABLE extcare.billing_records (
     total_cents integer DEFAULT 0 NOT NULL,
     notes text,
     created_at timestamp(6) with time zone NOT NULL,
-    updated_at timestamp(6) with time zone NOT NULL
+    updated_at timestamp(6) with time zone NOT NULL,
+    billing_category text
 );
 
 
@@ -648,6 +649,7 @@ ALTER TABLE ONLY extcare.tasks
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260928010000'),
 ('20260925010000'),
 ('20260924040000'),
 ('20260924030000'),

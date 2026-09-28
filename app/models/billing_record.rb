@@ -8,6 +8,11 @@ class BillingRecord < ApplicationRecord
     total_cents / 100.0
   end
 
+  def flag_labels
+    categories = billing_category.to_s.split(",").map(&:strip)
+    Student::FLAGS.filter_map { |attribute, label| label if categories.include?(attribute) }
+  end
+
   # Billing is a stored snapshot of a day's visits, so every recompute rebuilds
   # it from the whole visit list. With nothing billable left the stored row is
   # wrong rather than merely empty, so it goes away with the visits.
@@ -26,6 +31,7 @@ class BillingRecord < ApplicationRecord
     #   amounts = { am_cents: 0, pm_cents: 0, late_fee_cents: 0, total_cents: 0 }
     # end
     amounts[:notes] = visit_summary(visits)
+    amounts[:billing_category] = Student::FLAGS.filter_map { |attribute, _| attribute if student.public_send(attribute) }.join(", ")
     record ||= new(student: student, day: day)
     record.assign_attributes(amounts)
     record.save!

@@ -10,6 +10,30 @@ class Student < ApplicationRecord
   has_many :attendances, inverse_of: :student
   has_many :billing_records, inverse_of: :student
 
+  attribute :recalculate_billing_from, :date
+  validates :recalculate_billing_from, presence: { message: "must be a valid date" },
+    if: -> { billing_category_changed? && recalculate_billing_from_before_type_cast.present? }
+
+  def billing_category_changed?
+    FLAGS.any? { |attribute, _| will_save_change_to_attribute?(attribute) }
+  end
+
+  def update_with_billing_recalculation(attributes)
+    assign_attributes(attributes)
+    recalculate = billing_category_changed? && recalculate_billing_from.present?
+
+    transaction do
+      next false unless save
+
+      if recalculate
+        billing_records.where(day: recalculate_billing_from..).pluck(:day).each do |day|
+          BillingRecord.recalculate!(student: self, day: day)
+        end
+      end
+      true
+    end
+  end
+
   normalizes :first_name, :last_name, with: ->(name) { name.to_s.strip.gsub(/\s+/, " ") }
   normalizes :blackbaud_id, with: ->(value) { value.to_s.strip.presence }
   normalizes :student_id, with: ->(value) { value.to_s.strip.presence }

@@ -22,7 +22,7 @@ class Admin::StudentsController < Admin::BaseController
 
   def update
     @student = Student.find(params[:id])
-    attributes = params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :student_id, :guardian_list, :additional_adult_list, :alert, :notes, :hidden, :staff, :prepaid_am, :prepaid_pm ])
+    attributes = params.expect(student: [ :first_name, :last_name, :grade, :blackbaud_id, :student_id, :guardian_list, :additional_adult_list, :alert, :notes, :hidden, :staff, :prepaid_am, :prepaid_pm, :recalculate_billing_from ])
 
     if attributes.key?(:hidden)
       if ActiveModel::Type::Boolean.new.cast(attributes[:hidden])
@@ -33,7 +33,7 @@ class Admin::StudentsController < Admin::BaseController
         notice = "#{@student.full_name} restored."
       end
       redirect_to admin_students_path(filter_params), notice: notice
-    elsif @student.update(attributes)
+    elsif @student.update_with_billing_recalculation(attributes)
       redirect_to admin_students_path(filter_params), notice: "#{@student.full_name} updated."
     else
       render :edit, status: :unprocessable_entity

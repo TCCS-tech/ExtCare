@@ -3,7 +3,7 @@
   <div class="alert alert-danger"><%= student.errors.full_messages.to_sentence %></div>
 <% end %>
 
-<%= form_with model: student, url: student.persisted? ? admin_student_path(student) : admin_students_path, class: "mb-4" do |form| %>
+<%= form_with model: student, url: student.persisted? ? admin_student_path(student) : admin_students_path, class: "mb-4", data: { controller: "student-billing" } do |form| %>
   <% filters.each do |key, value| %>
     <%= hidden_field_tag key, value %>
   <% end %>
@@ -47,19 +47,29 @@
     <div class="col-12">
       <div class="d-flex flex-wrap gap-3">
         <div class="form-check">
-          <%= form.check_box :staff, class: "form-check-input" %>
+          <%= form.check_box :staff, class: "form-check-input", data: { student_billing_target: "category", original: student.attribute_in_database("staff"), action: "student-billing#toggle" } %>
           <%= form.label :staff, "Staff", class: "form-check-label" %>
         </div>
         <div class="form-check">
-          <%= form.check_box :prepaid_am, class: "form-check-input" %>
+          <%= form.check_box :prepaid_am, class: "form-check-input", data: { student_billing_target: "category prepaidAm", original: student.attribute_in_database("prepaid_am"), action: "student-billing#syncPrepaidPm" } %>
           <%= form.label :prepaid_am, "Prepaid AM", class: "form-check-label" %>
         </div>
         <div class="form-check">
-          <%= form.check_box :prepaid_pm, class: "form-check-input" %>
+          <%= form.check_box :prepaid_pm, class: "form-check-input", data: { student_billing_target: "category prepaidPm", original: student.attribute_in_database("prepaid_pm"), action: "student-billing#toggle" } %>
           <%= form.label :prepaid_pm, "Prepaid PM", class: "form-check-label" %>
         </div>
       </div>
     </div>
+    <% if student.persisted? %>
+      <%= tag.section class: "col-12", hidden: !student.billing_category_changed?, data: { student_billing_target: "section" }, aria: { labelledby: "recalculate-billing-heading" } do %>
+        <h2 id="recalculate-billing-heading" class="h5">Recalculate Billing</h2>
+        <p>If this student's billing category has changed, you can recalculate the billing from the specified date. Billing records before that date will not be changed. If no date is selected, no recalculations will be performed.</p>
+        <div class="col-md-4">
+          <%= form.label :recalculate_billing_from, "Recalculate from", class: "form-label" %>
+          <%= form.date_field :recalculate_billing_from, class: "form-control", disabled: !student.billing_category_changed?, data: { student_billing_target: "date" } %>
+        </div>
+      <% end %>
+    <% end %>
     <div class="col-12">
       <%= form.submit(student.persisted? ? "Save changes" : "Add student", class: "btn btn-primary") %>
       <%= link_to "Cancel", admin_students_path(filters), class: "btn btn-outline-secondary ms-2" %>

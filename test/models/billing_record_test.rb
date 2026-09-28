@@ -11,6 +11,25 @@ class BillingRecordTest < ActiveSupport::TestCase
     end
   end
 
+  test "billing snapshots active categories and only refreshes them when recalculated" do
+    @student.update!(staff: true, prepaid_am: true, prepaid_pm: true)
+    Attendance.create!(student: @student, recorded_by: users(:staff), day: @day,
+      checkin: Time.zone.local(2026, 9, 25, 7),
+      checkout: Time.zone.local(2026, 9, 25, 8))
+    record = @student.billing_records.find_by!(day: @day)
+    assert_equal "staff, prepaid_am, prepaid_pm", record.billing_category
+
+    @student.update!(staff: false, prepaid_am: false)
+    assert_equal "staff, prepaid_am, prepaid_pm", record.reload.billing_category
+
+    BillingRecord.recalculate!(student: @student, day: @day)
+    assert_equal "prepaid_pm", record.reload.billing_category
+
+    @student.update!(prepaid_pm: false)
+    BillingRecord.recalculate!(student: @student, day: @day)
+    assert_equal "", record.reload.billing_category
+  end
+
   test "billing uses a weekday override and lets a date override take priority" do
     @default_schedule.update!(start_time: "15:00", end_time: "17:30")
     friday_schedule = ExtendedCareSchedule.create!(day_of_week: "friday",

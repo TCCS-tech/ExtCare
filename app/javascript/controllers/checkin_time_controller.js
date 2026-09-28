@@ -32,7 +32,6 @@ export default class extends Controller {
     this.adjustButtonTarget.hidden = adjusting
     this.fieldTarget.hidden = !adjusting
     this.resetButtonTarget.hidden = !adjusting
-    this.fieldTarget.step = adjusting ? "300" : "60"
     if (adjusting) this.fieldTarget.value = this.override
     this.updateClock()
   }
