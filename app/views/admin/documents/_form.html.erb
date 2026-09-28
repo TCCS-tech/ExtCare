@@ -1,0 +1,24 @@
+<%= form_with model: [:admin, document] do |form| %>
+  <% if document.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <ul class="mb-0">
+        <% document.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :title, class: "form-label" %>
+    <%= form.text_field :title, required: true, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :body, class: "form-label", id: "document_body_label" %>
+    <%= tag.lexxy_editor name: "document[body]", id: "document_body", value: document.body, attachments: "false", "aria-labelledby": "document_body_label", class: "lexxy-content", placeholder: "Write your document…" %>
+  </div>
+  <div class="d-flex gap-2">
+    <%= form.submit document.persisted? ? "Save changes" : "Create document", class: "btn btn-primary" %>
+    <%= link_to "Cancel", document.persisted? ? admin_document_path(document) : admin_documents_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

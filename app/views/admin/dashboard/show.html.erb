@@ -38,6 +38,12 @@
       <p class="text-body-secondary mb-0">Track new features or bug reports.</p>
     <% end %>
   </div>
+  <div class="col-12 col-md-6">
+    <%= link_to admin_documents_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">Documents</h2>
+      <p class="text-body-secondary mb-0">Create and edit school documents.</p>
+    <% end %>
+  </div>
   <% if Rails.env.development? %>
     <div class="col-12 col-md-6">
       <div class="card card-body shadow-sm h-100">

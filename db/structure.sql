@@ -74,6 +74,21 @@ END;
 $$;
 
 
+--
+-- Name: version_document(); Type: FUNCTION; Schema: extcare; Owner: -
+--
+
+CREATE FUNCTION extcare.version_document() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  INSERT INTO extcare.versions (created_at, table_name, data)
+  VALUES (clock_timestamp(), TG_TABLE_NAME, to_jsonb(OLD));
+  RETURN OLD;
+END;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -163,6 +178,38 @@ CREATE SEQUENCE extcare.billing_records_id_seq
 --
 
 ALTER SEQUENCE extcare.billing_records_id_seq OWNED BY extcare.billing_records.id;
+
+
+--
+-- Name: documents; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.documents (
+    id bigint NOT NULL,
+    title text NOT NULL,
+    body text DEFAULT ''::text NOT NULL,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL
+);
+
+
+--
+-- Name: documents_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.documents_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: documents_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.documents_id_seq OWNED BY extcare.documents.id;
 
 
 --
@@ -356,6 +403,37 @@ ALTER SEQUENCE extcare.users_id_seq OWNED BY extcare.users.id;
 
 
 --
+-- Name: versions; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.versions (
+    id bigint NOT NULL,
+    created_at timestamp(6) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    table_name text NOT NULL,
+    data jsonb NOT NULL
+);
+
+
+--
+-- Name: versions_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: versions_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.versions_id_seq OWNED BY extcare.versions.id;
+
+
+--
 -- Name: attendance id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
@@ -367,6 +445,13 @@ ALTER TABLE ONLY extcare.attendance ALTER COLUMN id SET DEFAULT nextval('extcare
 --
 
 ALTER TABLE ONLY extcare.billing_records ALTER COLUMN id SET DEFAULT nextval('extcare.billing_records_id_seq'::regclass);
+
+
+--
+-- Name: documents id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.documents ALTER COLUMN id SET DEFAULT nextval('extcare.documents_id_seq'::regclass);
 
 
 --
@@ -405,6 +490,13 @@ ALTER TABLE ONLY extcare.users ALTER COLUMN id SET DEFAULT nextval('extcare.user
 
 
 --
+-- Name: versions id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.versions ALTER COLUMN id SET DEFAULT nextval('extcare.versions_id_seq'::regclass);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
 --
 
@@ -426,6 +518,14 @@ ALTER TABLE ONLY extcare.attendance
 
 ALTER TABLE ONLY extcare.billing_records
     ADD CONSTRAINT billing_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: documents documents_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.documents
+    ADD CONSTRAINT documents_pkey PRIMARY KEY (id);
 
 
 --
@@ -474,6 +574,14 @@ ALTER TABLE ONLY extcare.tasks
 
 ALTER TABLE ONLY extcare.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: versions versions_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.versions
+    ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -603,6 +711,13 @@ CREATE TRIGGER attendance_enforce_visit_rules BEFORE INSERT OR UPDATE OF student
 
 
 --
+-- Name: documents documents_version_history; Type: TRIGGER; Schema: extcare; Owner: -
+--
+
+CREATE TRIGGER documents_version_history AFTER DELETE OR UPDATE ON extcare.documents FOR EACH ROW EXECUTE FUNCTION extcare.version_document();
+
+
+--
 -- Name: attendance fk_rails_0e61de1732; Type: FK CONSTRAINT; Schema: extcare; Owner: -
 --
 
@@ -649,6 +764,7 @@ ALTER TABLE ONLY extcare.tasks
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260928020000'),
 ('20260928010000'),
 ('20260925010000'),
 ('20260924040000'),

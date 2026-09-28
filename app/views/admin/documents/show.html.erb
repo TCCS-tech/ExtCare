@@ -1,0 +1,14 @@
+<% content_for :title, @document.title %>
+<%= render "shared/page_heading", title: @document.title, description: "Updated #{@document.updated_at.strftime('%b %-d, %Y')}", eyebrow: "SCHOOL OFFICE" %>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <%= link_to "Back to Documents", admin_documents_path, class: "btn btn-outline-secondary" %>
+  <%= link_to "Edit", edit_admin_document_path(@document), class: "btn btn-primary" %>
+  <%= button_to "Delete", admin_document_path(@document), method: :delete, class: "btn btn-outline-danger", form: { data: { turbo_confirm: "Delete \"#{@document.title}\"?" } } %>
+</div>
+
+<article class="card shadow-sm">
+  <div class="card-body lexxy-content">
+    <%= sanitize @document.body, tags: Document::BODY_TAGS, attributes: Document::BODY_ATTRIBUTES %>
+  </div>
+</article>

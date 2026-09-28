@@ -1,0 +1,5 @@
+<% content_for :title, "Edit document" %>
+<%= render "shared/page_heading", title: "Edit document", description: @document.title, eyebrow: "SCHOOL OFFICE" %>
+<div class="card shadow-sm">
+  <div class="card-body"><%= render "form", document: @document %></div>
+</div>

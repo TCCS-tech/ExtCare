@@ -53,3 +53,15 @@ PostgreSQL enums and attendance trigger. Rails loads it when preparing a fresh
 database, including parallel test databases. Run `bin/rails db:prepare` after
 pulling migrations, or `RAILS_ENV=test bin/rails db:prepare` for just the test
 database. PostgreSQL client tools (`psql` and `pg_dump`) must be on `PATH`.
+
+## Documents
+
+Admins can create and edit documents from Admin → Documents. Lexxy stores rich
+text HTML in `documents.body`; attachments and upload endpoints are disabled.
+
+The PostgreSQL `documents_version_history` trigger saves the complete **previous**
+row as JSONB in `extcare.versions.data` on every UPDATE or DELETE, including direct
+SQL and bulk changes. `table_name` is `documents`, and `created_at` records the
+version time. Inserts do not create versions. Versions participate in the same
+transaction as the change, so rolled-back changes leave no history. This table
+is for database administrators and has no application UI.
