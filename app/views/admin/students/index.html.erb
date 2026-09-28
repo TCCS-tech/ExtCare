@@ -23,7 +23,7 @@
       </div>
       <p id="student-search-hint" class="form-text mt-2">Search with part of a name. For example, “a c” puts first names starting with A and last names starting with C first, then shows broader matches.</p>
       <div class="d-flex flex-wrap gap-2 mt-3" role="group" aria-label="Filter by grade">
-        <% all_grades_active = @grade.blank? || @grade == "all" %>
+        <% all_grades_active = @grade == "all" %>
         <%= button_tag "All", type: "button", aria: { pressed: all_grades_active }, class: "btn #{all_grades_active ? "btn-primary" : "btn-outline-primary"}", data: { action: "roster-filter#submitGrade", roster_filter_grade_param: "all" } %>
         <% Student.grade_options.each do |label, number| %>
           <% active = @grade.to_s == number.to_s %>
@@ -85,6 +85,9 @@
               <tr>
                 <td>
                   <%= student.full_name %>
+                  <% if student.alert.present? %>
+                    <span class="badge text-bg-danger" role="img" aria-label="Student alert" title="Student alert">&#x26A0; Alert</span>
+                  <% end %>
                   <% if student.hidden? %>
                     <span class="badge text-bg-secondary">Removed</span>
                   <% end %>
