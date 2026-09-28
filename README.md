@@ -11,6 +11,16 @@ just server
 
 Open http://localhost:3000
 
+## PWA updates
+
+Open pages check `/build` on load, every minute while visible, and when returning
+to the foreground or reconnecting. A changed build shows a Reload button; it
+never automatically reloads or interrupts data entry. The version is a digest of
+application code, configuration, public source files, and Gemfile.lock computed
+at boot, so replicas of the same build agree without deployment configuration.
+The version endpoint and browser checks disable caching. Existing installations
+need to load this feature once before they can detect subsequent deployments.
+
 ## Password reset email
 
 Production sends password reset messages through Gmail SMTP. Configure these

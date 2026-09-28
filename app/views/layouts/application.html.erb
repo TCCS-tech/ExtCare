@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="ExtendedCare">
     <meta name="application-name" content="ExtendedCare">
+    <meta name="build-version" content="<%= Rails.application.config.x.build_version %>">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json">
     <%= csrf_meta_tags %>
@@ -42,6 +43,13 @@
     <% end %>
 
     <main class="container py-4">
+      <div id="build-update" data-turbo-permanent data-controller="build-update"
+           data-build-update-url-value="<%= build_path %>"
+           data-action="visibilitychange@document->build-update#check focus@window->build-update#check online@window->build-update#check"
+           class="alert alert-info" role="status" hidden>
+        An update is available. Finish what you’re doing, then
+        <button type="button" class="btn btn-primary btn-sm ms-1" data-action="build-update#reload">Reload</button>
+      </div>
       <%= render "shared/flash" %>
       <%= yield %>
     </main>

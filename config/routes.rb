@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resource :build, only: :show
   get "/manifest.json", to: "rails/pwa#manifest", as: :pwa_manifest
   get "/service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
 
