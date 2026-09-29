@@ -258,6 +258,44 @@ CREATE TABLE extcare.schema_migrations (
 
 
 --
+-- Name: school_year_rollovers; Type: TABLE; Schema: extcare; Owner: -
+--
+
+CREATE TABLE extcare.school_year_rollovers (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    status character varying DEFAULT 'pending'::character varying NOT NULL,
+    backup_key character varying NOT NULL,
+    fingerprints jsonb DEFAULT '{}'::jsonb NOT NULL,
+    downloaded_at timestamp(6) with time zone,
+    completed_at timestamp(6) with time zone,
+    error_message text,
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL,
+    CONSTRAINT school_year_rollovers_status CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'generating'::character varying, 'ready'::character varying, 'failed'::character varying, 'completed'::character varying])::text[])))
+);
+
+
+--
+-- Name: school_year_rollovers_id_seq; Type: SEQUENCE; Schema: extcare; Owner: -
+--
+
+CREATE SEQUENCE extcare.school_year_rollovers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: school_year_rollovers_id_seq; Type: SEQUENCE OWNED BY; Schema: extcare; Owner: -
+--
+
+ALTER SEQUENCE extcare.school_year_rollovers_id_seq OWNED BY extcare.school_year_rollovers.id;
+
+
+--
 -- Name: sessions; Type: TABLE; Schema: extcare; Owner: -
 --
 
@@ -462,6 +500,13 @@ ALTER TABLE ONLY extcare.extended_care_schedules ALTER COLUMN id SET DEFAULT nex
 
 
 --
+-- Name: school_year_rollovers id; Type: DEFAULT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.school_year_rollovers ALTER COLUMN id SET DEFAULT nextval('extcare.school_year_rollovers_id_seq'::regclass);
+
+
+--
 -- Name: sessions id; Type: DEFAULT; Schema: extcare; Owner: -
 --
 
@@ -542,6 +587,14 @@ ALTER TABLE ONLY extcare.extended_care_schedules
 
 ALTER TABLE ONLY extcare.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: school_year_rollovers school_year_rollovers_pkey; Type: CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.school_year_rollovers
+    ADD CONSTRAINT school_year_rollovers_pkey PRIMARY KEY (id);
 
 
 --
@@ -648,6 +701,20 @@ CREATE UNIQUE INDEX index_extended_care_schedules_on_day_of_week ON extcare.exte
 
 
 --
+-- Name: index_school_year_rollovers_on_backup_key; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_school_year_rollovers_on_backup_key ON extcare.school_year_rollovers USING btree (backup_key);
+
+
+--
+-- Name: index_school_year_rollovers_on_user_id; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE INDEX index_school_year_rollovers_on_user_id ON extcare.school_year_rollovers USING btree (user_id);
+
+
+--
 -- Name: index_sessions_on_user_id; Type: INDEX; Schema: extcare; Owner: -
 --
 
@@ -750,6 +817,14 @@ ALTER TABLE ONLY extcare.sessions
 
 
 --
+-- Name: school_year_rollovers fk_rails_820548da1c; Type: FK CONSTRAINT; Schema: extcare; Owner: -
+--
+
+ALTER TABLE ONLY extcare.school_year_rollovers
+    ADD CONSTRAINT fk_rails_820548da1c FOREIGN KEY (user_id) REFERENCES extcare.users(id);
+
+
+--
 -- Name: tasks fk_rails_a362a150d3; Type: FK CONSTRAINT; Schema: extcare; Owner: -
 --
 
@@ -764,6 +839,7 @@ ALTER TABLE ONLY extcare.tasks
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260929010000'),
 ('20260928020000'),
 ('20260928010000'),
 ('20260925010000'),

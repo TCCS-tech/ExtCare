@@ -75,3 +75,52 @@ SQL and bulk changes. `table_name` is `documents`, and `created_at` records the
 version time. Inserts do not create versions. Versions participate in the same
 transaction as the change, so rolled-back changes leave no history. This table
 is for database administrators and has no application UI.
+
+## New school year
+
+Admin → New School Year runs a backup/download/confirmation wizard. A background
+Active Job exports all database columns and rows from `students`, `attendance`,
+and `billing_records` into three XLSX files inside one ZIP. Exports use a single
+repeatable-read snapshot, 500-row batches with query caching disabled, disk-backed
+ZIP streams, and additional worksheets when Excel's row limit is reached. Values
+are stored as text to preserve IDs and avoid executing spreadsheet formulas;
+arrays are JSON and timestamps include their offset. A cell exceeding Excel's
+32,767-character limit fails the backup rather than silently losing data.
+
+The authenticated admin must request the download and type `I UNDERSTAND` exactly.
+The browser cannot verify that a file was saved, so the confirmation page asks the
+admin to check that the download completed. The final transaction locks all three
+tables, compares their contents against the backup, and rejects changed data. It
+then runs `TRUNCATE ... RESTART IDENTITY` for those three tables only. Repeated
+confirmation requests cannot delete records entered after a completed reset.
+
+Run `bin/rails db:migrate` before using this feature. Backup archives are private
+files outside the public directory, retained at `storage/school_year_backups`.
+Set `SCHOOL_YEAR_BACKUP_DIRECTORY` to a persistent, shared private volume if the
+app has multiple instances or deploys with ephemeral storage; the job and web
+processes must see the same directory. Plan archive retention according to the
+school's needs. The app currently uses Rails' in-process async job adapter: keep
+the process running during export. Interrupted jobs offer a fresh backup after
+two hours; a durable Active Job adapter can be configured for deployments that
+need jobs to survive restarts. The browser polls every two seconds while waiting.
+
+## Import students
+
+Admin → Import Data accepts the `students.xlsx` extracted from a school year
+backup (maximum 20 MB compressed and 256 MB expanded). Keep every original
+column header; all worksheets use the same headers. The importer streams rows,
+uses disk-backed shared strings for files resaved in Excel, and rejects formulas,
+invalid values, duplicate Blackbaud/student ID pairs, and malformed files.
+
+Students are matched by the unique `(blackbaud_id, student_id)` pair, with the
+same identifier normalization used by student forms. Existing records retain
+their database ID and creation timestamp, preserving attendance and billing
+links. New rows receive new database IDs and timestamps; backup metadata columns
+are ignored. An identical re-import makes no changes, including timestamps.
+Boolean flags use `true`/`false` or `1`/`0`; grade is `0` through `6`; guardian and
+additional adult lists are JSON arrays of strings, as written by the backup.
+
+Imports run in one transaction, serialize student writes, and stop without any
+changes if a row fails validation. Students absent from the file remain; existing
+attendance and billing records are not imported or recalculated. The page reports
+added, updated, and unchanged student counts on completion.

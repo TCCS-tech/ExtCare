@@ -36,3 +36,6 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Never include private backups in a container image.
+/storage/school_year_backups/

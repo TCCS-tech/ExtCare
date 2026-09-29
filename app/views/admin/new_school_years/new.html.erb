@@ -1,0 +1,8 @@
+<% content_for :title, "New School Year" %>
+<%= render "shared/page_heading", title: "New School Year", description: "Back up this year's records, then prepare for a fresh start.", eyebrow: "SCHOOL OFFICE" %>
+<div class="card card-body shadow-sm">
+  <h2 class="h4">1. Create a backup</h2>
+  <p>First, we'll create a ZIP file containing three spreadsheets: students, attendance, and billing records. Every row and database column is included, including hidden students.</p>
+  <p>You'll need to download the backup before you can continue to the deletion steps.</p>
+  <%= button_to "Create backup", admin_new_school_years_path, class: "btn btn-primary align-self-start" %>
+</div>

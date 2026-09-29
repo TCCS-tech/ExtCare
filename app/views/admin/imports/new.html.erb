@@ -1,0 +1,13 @@
+<% content_for :title, "Import Data" %>
+<%= render "shared/page_heading", title: "Import Data", description: "Add or update students from a school year backup.", eyebrow: "SCHOOL OFFICE" %>
+<div class="card card-body shadow-sm">
+  <h2 class="h4">Import students</h2>
+  <p>Extract students.xlsx from your backup ZIP, then upload it here. Keep the original column headers and use plain values instead of formulas. The maximum file size is 20 MB.</p>
+  <p>Students are matched by Blackbaud ID and student ID together. Matching students are updated; new students are added. Uploading the same file again won't create duplicates. Students missing from the file stay in the database.</p>
+  <p>Database record IDs and timestamps are managed by the app. This imports student records only. If any row is invalid, the entire import is canceled.</p>
+  <%= form_with url: admin_imports_path, multipart: true do |form| %>
+    <%= form.label :file, "Students spreadsheet (.xlsx)", class: "form-label" %>
+    <%= form.file_field :file, required: true, accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", class: "form-control mb-3" %>
+    <%= form.submit "Import students", class: "btn btn-primary", data: { turbo_submits_with: "Importing students…" } %>
+  <% end %>
+</div>

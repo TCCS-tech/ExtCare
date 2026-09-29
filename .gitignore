@@ -27,3 +27,5 @@
 /config/*.key
 
 _private
+# Private school year backup archives.
+/storage/school_year_backups/

@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :school_year_rollovers
   has_secure_password reset_token: { expires_in: 7.days }
   has_many :sessions, dependent: :destroy
 

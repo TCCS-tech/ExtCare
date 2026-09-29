@@ -14,6 +14,10 @@ Rails.application.routes.draw do
     root "dashboard#show"
     post "clear_attendance", to: "dashboard#clear_attendance", as: :clear_attendance
     resources :documents
+    resources :imports, only: %i[new create]
+    resources :new_school_years, only: %i[new create show update] do
+      resource :download, only: :create, module: :new_school_years
+    end
     resources :students, only: %i[ index new create edit update ]
     resources :users, only: %i[ index create update ]
     post "users/invite", to: "users#invite", as: :invite_user

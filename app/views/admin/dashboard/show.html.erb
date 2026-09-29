@@ -44,6 +44,18 @@
       <p class="text-body-secondary mb-0">Create and edit school documents.</p>
     <% end %>
   </div>
+  <div class="col-12 col-md-6">
+    <%= link_to new_admin_new_school_year_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">New School Year</h2>
+      <p class="text-body-secondary mb-0">Back up all records and prepare for the new school year.</p>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-6">
+    <%= link_to new_admin_import_path, class: "card card-body shadow-sm text-decoration-none h-100" do %>
+      <h2 class="h4">Import Data</h2>
+      <p class="text-body-secondary mb-0">Upload a student backup to add or update student records.</p>
+    <% end %>
+  </div>
   <% if Rails.env.development? %>
     <div class="col-12 col-md-6">
       <div class="card card-body shadow-sm h-100">

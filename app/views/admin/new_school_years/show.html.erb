@@ -1,0 +1,50 @@
+<% content_for :title, "New School Year" %>
+<%= render "shared/page_heading", title: "New School Year", description: "Back up this year's records, then prepare for a fresh start.", eyebrow: "SCHOOL OFFICE" %>
+<div class="card card-body shadow-sm"
+     data-controller="school-year-wizard"
+     data-school-year-wizard-url-value="<%= admin_new_school_year_path(@rollover, format: :json) %>"
+     data-school-year-wizard-step-value="<%= wizard_step %>">
+  <% case wizard_step %>
+  <% when "waiting" %>
+    <h2 class="h4">1. Creating your backup</h2>
+    <p role="status"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Please wait while we create your three spreadsheets and ZIP file. This may take a few minutes.</p>
+    <p class="text-body-secondary mb-0">This page checks automatically for completion. You can return to this page if you close it.</p>
+    <noscript><p><%= link_to "Check backup status", admin_new_school_year_path(@rollover) %></p></noscript>
+  <% when "download" %>
+    <h2 class="h4">2. Download your backup</h2>
+    <p>Your backup is ready. Click below to download the ZIP containing students.xlsx, attendance.xlsx, and billing_records.xlsx.</p>
+    <p>Keep this file somewhere safe. Make sure the download finishes and the file opens before continuing.</p>
+    <%= button_to "Download backup ZIP", admin_new_school_year_download_path(@rollover), data: { turbo: false }, class: "btn btn-primary align-self-start" %>
+    <noscript><p>After downloading, <%= link_to "continue to the next step", admin_new_school_year_path(@rollover) %>.</p></noscript>
+  <% when "confirm" %>
+    <h2 class="h4">3. Understand what will be deleted</h2>
+    <div class="alert alert-danger" role="alert">
+      <strong>All student, attendance, and billing data will be permanently deleted.</strong>
+      This includes hidden students and every attendance and billing record. This cannot be undone. Record IDs will restart from 1.
+    </div>
+    <p>Make sure your backup download finished and that you've saved the file somewhere safe.</p>
+    <h2 class="h4">4. Confirm you understand</h2>
+    <%= form_with url: admin_new_school_year_path(@rollover), method: :patch do |form| %>
+      <%= form.label :confirmation, "Type I UNDERSTAND exactly to continue", class: "form-label" %>
+      <%= form.text_field :confirmation, required: true, pattern: "I UNDERSTAND", autocomplete: "off", class: "form-control mb-3", data: { school_year_wizard_target: "confirmation", action: "input->school-year-wizard#confirm" } %>
+      <h2 class="h4">5. Start the new school year</h2>
+      <%= form.submit "Delete all student, attendance, and billing data", disabled: true, class: "btn btn-danger", data: { school_year_wizard_target: "submit" } %>
+      <noscript><p>Enable JavaScript to confirm and start the new school year.</p></noscript>
+    <% end %>
+  <% when "completed" %>
+    <h2 class="h4">6. Success!</h2>
+    <p role="status">All student, attendance, and billing records have been deleted. Record IDs have restarted from 1. The app is ready for the new school year.</p>
+    <%= link_to "Return to Admin", admin_root_path, class: "btn btn-primary align-self-start" %>
+  <% when "failed" %>
+    <h2 class="h4">Backup unavailable</h2>
+    <p role="alert"><%= @rollover.error_message || "The backup task was interrupted or took too long. Please create a new backup." %></p>
+    <%= button_to "Create a new backup", admin_new_school_years_path, class: "btn btn-primary align-self-start" %>
+  <% end %>
+  <% if %w[download confirm].include?(wizard_step) %>
+    <div class="mt-4 pt-3 border-top">
+      <p class="text-body-secondary">If records have changed since this backup, create and download a new one before continuing.</p>
+      <%= button_to "Start again with a new backup", admin_new_school_years_path, params: { restart: "1" }, class: "btn btn-outline-secondary" %>
+    </div>
+  <% end %>
+  <p class="text-body-secondary mt-3 mb-0" data-school-year-wizard-target="status" role="status"></p>
+</div>
