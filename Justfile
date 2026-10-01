@@ -2,7 +2,7 @@ set dotenv-load := true
 
 default:
 	@just --list --unsorted
-    
+
 # Start Postgres, install gems, and prepare the database
 setup:
     docker compose up -d --wait
@@ -30,14 +30,11 @@ migrate:
     bin/rails db:migrate
 
 reset-db:
-    bin/rails db:drop    
+    bin/rails db:drop
     bin/rails db:create
     bin/rails db:migrate
     bin/rails db:seed
-    bin/rails runner script/import_students.rb 
-    
-script *cmd:
-    bin/rails runner script/{{cmd}}.rb
+    bin/rails runner script/import_students.rb
 
 rails *args:
     bin/rails {{args}}

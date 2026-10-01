@@ -42,6 +42,41 @@ class ImportSeptemberAttendanceTest < ActiveSupport::TestCase
     assert_equal 1_000, @student.billing_records.find_by!(day: @day).total_cents
   end
 
+  test "imports only dates in the inclusive range and ignores problems outside it" do
+    days = [@day - 1, @day, @day + 1, @day + 2]
+    unknown = Student.new(first_name: "Unknown", last_name: "Student")
+    rows = [[unknown, "bad time"], [@student, "300-400"], [@student, "300-430"], [@student, "bad time"]]
+
+    output, = import_rows(rows, days: days, arguments: [@day.to_s, (@day + 1).to_s])
+
+    assert_equal [@day, @day + 1], @student.attendances.order(:day).pluck(:day)
+    assert_equal [@day, @day + 1], @student.billing_records.order(:day).pluck(:day)
+    assert_includes output, "Imported 2 attendance records"
+    assert_not_includes output, "Could not import"
+  end
+
+  test "allows a single day range and a range with no workbook dates" do
+    rows = [[@student, "300-400"], [@student, "300-430"]]
+    output, = import_rows(rows, days: [@day, @day + 1], arguments: [@day.to_s, @day.to_s])
+    assert_equal [@day], @student.attendances.pluck(:day)
+    assert_includes output, "Imported 1 attendance records"
+
+    output, = import_rows(rows, days: [@day, @day + 1], arguments: [(@day + 2).to_s, (@day + 3).to_s])
+    assert_equal [@day], @student.attendances.pluck(:day)
+    assert_includes output, "Imported 0 attendance records"
+    assert_includes output, "Recalculated billing for 0 student/day pair(s)."
+  end
+
+  test "rejects incomplete invalid and reversed ranges before importing" do
+    [[@day.to_s], ["2026-02-30", @day.to_s], ["20260922", @day.to_s],
+      [(@day + 1).to_s, @day.to_s]].each do |arguments|
+      error = assert_raises(SystemExit) { import_rows([[@student, "300-400"]], arguments: arguments) }
+      assert_not error.success?
+      assert_empty @student.attendances
+      assert_empty @student.billing_records
+    end
+  end
+
   test "a database rejection in a batch still imports its other rows" do
     Attendance.create!(student: @student, recorded_by: users(:staff), day: @day - 1,
       checkin: stamp(15) - 1.day)
@@ -63,7 +98,9 @@ class ImportSeptemberAttendanceTest < ActiveSupport::TestCase
     Time.zone.local(@day.year, @day.month, @day.day, hour)
   end
 
-  def import_rows(rows, days: [@day])
+  def import_rows(rows, days: [@day], arguments: [])
+    original_arguments = ARGV.dup
+    ARGV.replace(arguments)
     Tempfile.create(["september", ".xlsx"]) do |file|
       cells = days.each_with_index.map do |day, index|
         %(<c r="#{(67 + index).chr}1"><v>#{(day - Date.new(1899, 12, 30)).to_i}</v></c>)
@@ -94,6 +131,8 @@ class ImportSeptemberAttendanceTest < ActiveSupport::TestCase
       namespace.extend(namespace)
       capture_io { namespace.module_eval(source, script.to_s) }
     end
+  ensure
+    ARGV.replace(original_arguments)
   end
 
   def text_cell(reference, text)

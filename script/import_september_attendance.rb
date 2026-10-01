@@ -3,6 +3,22 @@ require "open3"
 require "rexml/document"
 require "rexml/xpath"
 
+# Usage: bin/rails runner script/import_september_attendance.rb [START_DATE END_DATE]
+# Dates use YYYY-MM-DD and both endpoints are included. Omit them to import all dates.
+date_range = unless ARGV.empty?
+  abort "Usage: bin/rails runner script/import_september_attendance.rb [START_DATE END_DATE] (YYYY-MM-DD)" unless ARGV.length == 2
+
+  begin
+    start_date, end_date = ARGV.map { |value| Date.iso8601(value) }
+  rescue Date::Error
+    abort "Start and end dates must be valid dates in YYYY-MM-DD format."
+  end
+  abort "Start and end dates must use YYYY-MM-DD format." unless ARGV.all? { |value| value.match?(/\A\d{4}-\d{2}-\d{2}\z/) }
+  abort "Start date must be on or before end date." if start_date > end_date
+
+  start_date..end_date
+end
+
 source = Rails.root.join("_private/September.xlsx")
 abort "Workbook not found: #{source}" unless File.file?(source)
 
@@ -105,7 +121,10 @@ sheet_data.each do |sheet, rows|
     serial = raw.to_f
     next unless (40_000..60_000).cover?(serial)
 
-    date_columns[column_number(cell.attributes["r"])] = Date.new(1899, 12, 30) + serial.to_i
+    day = Date.new(1899, 12, 30) + serial.to_i
+    next if date_range && !date_range.cover?(day)
+
+    date_columns[column_number(cell.attributes["r"])] = day
   end
 
   rows.drop(1).each do |row|
@@ -246,7 +265,7 @@ end
 puts "Imported #{created} attendance records; skipped #{skipped} matching records."
 puts "Recalculated billing for #{recalculated} student/day pair(s)."
 if problems.empty?
-  puts "All other workbook rows were imported."
+  puts(date_range ? "All other workbook rows within #{date_range.begin} through #{date_range.end} were imported." : "All other workbook rows were imported.")
 else
   puts "Could not import #{problems.length} row(s):"
   problems.each { |problem| puts "- #{problem}" }
