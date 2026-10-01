@@ -77,8 +77,8 @@ sheets = REXML::XPath.match(workbook, "/m:workbook/m:sheets/m:sheet", "m" => MAI
 students_by_name = Student.all.to_a.group_by do |student|
   [student.first_name.to_s.strip.downcase, student.last_name.to_s.strip.downcase]
 end
-staff = User.find_by(email: "staff@example.com")
-abort "Missing staff@example.com; seed the database before importing." unless staff
+staff = User.find_by(email: "admin@example.com")
+abort "Missing admin@example.com seed the database before importing." unless staff
 
 records = []
 problems = []
@@ -166,37 +166,66 @@ created = 0
 skipped = 0
 import_progress = { last_percent: -2 }
 Attendance.transaction do
-  records.each_with_index do |record, index|
-    show_progress("Importing attendance", index + 1, records.length, import_progress)
-    existing = Attendance.where(student_id: record[:student].id, day: record[:day]).to_a
-    if existing.any?
-      if existing.many?
-        problems << "#{record[:source]}: multiple attendance records already exist for #{record[:student].full_name} on #{record[:day]}"
+  $stderr.puts "Checking existing attendance..."
+  existing_by_key = Attendance.where(
+    student_id: records.map { |record| record[:student].id }.uniq,
+    day: records.map { |record| record[:day] }.uniq
+  ).to_a.group_by { |attendance| [attendance.student_id, attendance.day] }
+
+  records.each_slice(200).with_index do |batch, batch_index|
+    pending = batch.filter_map do |record|
+      existing = existing_by_key.fetch([record[:student].id, record[:day]], [])
+      if existing.any?
+        if existing.many?
+          problems << "#{record[:source]}: multiple attendance records already exist for #{record[:student].full_name} on #{record[:day]}"
+          next
+        end
+
+        existing = existing.first
+        if existing.checkin == record[:checkin] && existing.checkout == record[:checkout]
+          skipped += 1
+          next
+        end
+
+        problems << "#{record[:source]}: attendance already exists for #{record[:student].full_name} on #{record[:day]} with different times"
         next
       end
 
-      existing = existing.first
-      if existing.checkin == record[:checkin] && existing.checkout == record[:checkout]
-        skipped += 1
-        next
-      end
-
-      problems << "#{record[:source]}: attendance already exists for #{record[:student].full_name} on #{record[:day]} with different times"
-      next
+      # The parser supplies valid dates/times and resolved student/staff IDs.
+      # Bulk inserts retain database constraints but skip the create-commit
+      # billing callback: billing is rebuilt once in the visible phase below.
+      attributes = {
+        student_id: record[:student].id, day: record[:day], checkin: record[:checkin],
+        checkout: record[:checkout], checkin_by: staff.id
+      }
+      [record, attributes]
     end
 
-    begin
-      Attendance.transaction(requires_new: true) do
-        Attendance.create!(
-          student: record[:student], day: record[:day], checkin: record[:checkin],
-          checkout: record[:checkout], checkin_by: staff.id
-        )
+    if pending.any?
+      begin
+        Attendance.transaction(requires_new: true) do
+          Attendance.insert_all!(pending.map(&:last), returning: false)
+        end
+        created += pending.length
+      rescue ActiveRecord::StatementInvalid
+        # A rejected batch is fully rolled back. Retry its rows individually
+        # so one database rule violation does not discard the other students.
+        pending.each do |record, attributes|
+          begin
+            Attendance.transaction(requires_new: true) do
+              Attendance.insert_all!([attributes], returning: false)
+            end
+            created += 1
+          rescue ActiveRecord::StatementInvalid => error
+            problems << "#{record[:source]}: #{error.message.lines.first.to_s.strip}"
+          end
+        end
       end
-      created += 1
-    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => error
-      problems << "#{record[:source]}: #{error.message.lines.first.to_s.strip}"
     end
+
+    show_progress("Importing attendance", [ (batch_index + 1) * 200, records.length ].min, records.length, import_progress)
   end
+  $stderr.puts "Committing attendance..."
 end
 
 recalculated = 0
@@ -204,13 +233,14 @@ billing_problems = []
 billing_records = records.uniq { |record| [record[:student].id, record[:day]] }
 billing_progress = { last_percent: -2 }
 billing_records.each_with_index do |record, index|
-  show_progress("Recalculating billing", index + 1, billing_records.length, billing_progress)
+  show_progress("Recalculating billing", 0, billing_records.length, billing_progress) if index.zero?
   begin
     BillingRecord.recalculate!(student: record[:student], day: record[:day])
     recalculated += 1
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => error
     billing_problems << "#{record[:student].full_name} on #{record[:day]} (#{record[:source]}): #{error.message.lines.first.to_s.strip}"
   end
+  show_progress("Recalculating billing", index + 1, billing_records.length, billing_progress)
 end
 
 puts "Imported #{created} attendance records; skipped #{skipped} matching records."
