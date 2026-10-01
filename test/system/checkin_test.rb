@@ -69,6 +69,30 @@ class CheckinTest < ApplicationSystemTestCase
     assert_text "Sign in"
   end
 
+  test "staff cancels then confirms deleting attendance from checkouts" do
+    attendance = Attendance.check_in(student: @zara, by: users(:staff), day: Date.current)
+    sign_in users(:staff)
+    assert_button "Log out"
+    visit checkouts_path
+    confirmation = "Delete the attendance record for Zara Quill? This cannot be undone."
+
+    within "#checkout_attendance_#{attendance.id}" do
+      button = find(".checkout-delete-button")
+      dimensions = button.evaluate_script("[this.getBoundingClientRect().width, this.getBoundingClientRect().height]")
+      assert_in_delta dimensions[0], dimensions[1], 1
+      dismiss_confirm(confirmation) { button.click }
+    end
+    assert_selector "#checkout_attendance_#{attendance.id}"
+    assert Attendance.exists?(attendance.id)
+
+    accept_confirm(confirmation) { find(".checkout-delete-button").click }
+    assert_text "Attendance record deleted."
+    assert_no_selector "#checkout_attendance_#{attendance.id}"
+    assert_not Attendance.exists?(attendance.id)
+    page.refresh
+    assert_no_selector "#checkout_attendance_#{attendance.id}"
+  end
+
   test "admin adds and removes a student" do
     sign_in users(:admin)
     click_link "Admin"

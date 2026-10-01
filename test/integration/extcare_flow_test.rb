@@ -171,6 +171,43 @@ class ExtcareFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "staff deletes an open attendance record and keeps checkout filters" do
+    sign_in_as @staff
+    day = Date.current - 1
+    visit = Attendance.check_in(student: @mia, by: @staff, day: day, time: "15:00")
+    other_visit = Attendance.check_in(student: @noah, by: @staff, day: day, time: "15:00")
+
+    assert_difference -> { Attendance.count }, -1 do
+      delete checkout_path(visit), params: { day: day, grade: "1", q: "Mia" }
+    end
+
+    assert_redirected_to checkouts_path(day: day, grade: "1", q: "Mia")
+    assert_not Attendance.exists?(visit.id)
+    assert Attendance.exists?(other_visit.id)
+    follow_redirect!
+    assert_select ".student-name", text: "Mia Alvarez", count: 0
+  end
+
+  test "visitors cannot delete attendance records" do
+    visit = Attendance.check_in(student: @mia, by: @staff, day: Date.current)
+
+    assert_no_difference -> { Attendance.count } do
+      delete checkout_path(visit)
+    end
+    assert_redirected_to new_session_path
+  end
+
+  test "completed attendance cannot be deleted through checkouts" do
+    sign_in_as @staff
+    visit = Attendance.check_in(student: @mia, by: @staff, day: Date.current - 1, time: "15:00")
+    visit.check_out(time: "16:00")
+
+    assert_no_difference -> { Attendance.count } do
+      delete checkout_path(visit)
+    end
+    assert_response :not_found
+  end
+
   test "an open visit from another day blocks a new checkin" do
     sign_in_as @staff
     Attendance.check_in(student: @mia, by: @staff, day: Date.new(2026, 9, 21))

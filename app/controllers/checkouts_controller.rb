@@ -49,6 +49,14 @@ class CheckoutsController < ApplicationController
     end
   end
 
+  def destroy
+    visit = Attendance.open.find(params[:id])
+    visit.destroy!
+
+    redirect_to checkouts_path(day: visit.day, grade: params[:grade], q: params[:q]),
+      notice: "Attendance record deleted.", status: :see_other
+  end
+
   private
 
   def attendance_params

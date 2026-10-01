@@ -23,6 +23,15 @@
               params: { attendance_id: visit.id, day: day, grade: grade, q: query, checkout_time: (day < Date.current ? "15:00" : nil) },
               class: "btn btn-primary btn-lg checkout-submit-button",
               form: { class: "m-0", data: { action: "submit->checkin-time#submit" } } %>
+        <%= button_to checkout_path(visit), method: :delete,
+              params: { day: day, grade: grade, q: query },
+              class: "btn btn-danger btn-lg checkout-delete-button",
+              form: { class: "m-0", data: { turbo_confirm: "Delete the attendance record for #{visit.student.full_name}? This cannot be undone." } },
+              aria: { label: "Delete attendance for #{visit.student.full_name}" }, title: "Delete attendance" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" />
+          </svg>
+        <% end %>
         <button type="button" class="btn btn-outline-secondary btn-lg pickup-details-button" data-bs-toggle="modal" data-bs-target="#pickup-modal-<%= visit.id %>" aria-label="Add pickup name for <%= visit.student.full_name %>" title="Add pickup name">
           <span aria-hidden="true">…</span>
         </button>
