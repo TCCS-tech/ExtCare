@@ -4,7 +4,7 @@ class Admin::BillingRecordsController < Admin::BaseController
 
   EXPORT_HEADERS = [
     "Family Id", "School Student Id", "Student Last Name", "Student First Name",
-    "Grade Level",  "Amount", "Notes", "Account Status", "Billing name", "Custom Fee Description"
+    "Grade Level", "Account Status", "Billing name", "Amount", "Notes", "Custom Fee Description"
   ].freeze
 
   def index
@@ -73,10 +73,10 @@ class Admin::BillingRecordsController < Admin::BaseController
         last_name,
         first_name,
         export_grade_level(grade),
-        total_cents / 100.0,
-        notes.join(", "),
         "Active",
         "Elementary Extended Care",
+        total_cents / 100.0,
+        notes.join(", "),
         "#{month_name} Extended Care billing"
       ]
     end
