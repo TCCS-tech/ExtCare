@@ -11,6 +11,35 @@ just server
 
 Open http://localhost:3000
 
+## Google sign-in
+
+Password sign-in remains available. Google sign-in uses the same user record:
+existing permissions and passwords are preserved, and new Google users receive
+the staff (`User`) role. Gmail and Google Workspace accounts with a verified
+matching email are linked automatically. For an existing third-party email
+address, the user must enter their existing password once after Google sign-in
+to link the accounts (within ten minutes). Subsequent sign-ins can use either
+method. Google identities are matched by their stable subject ID after linking;
+Google email changes do not change the app's email or permissions. New Google
+users can use Forgot password to set a password for manual sign-in.
+
+To enable the button:
+
+1. Create a **Web application** OAuth client in Google Cloud and configure its
+   consent screen for the intended users (add test users if it is in testing).
+2. Add authorized redirect URIs matching each app origin exactly:
+   `http://localhost:3000/api/auth/callback/google` for development and
+   `https://YOUR_APP_HOST/api/auth/callback/google` for production.
+3. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the app environment;
+   keep the secret in the host's secret manager. Both must be set for the button
+   and OAuth middleware to be enabled. These are separate from Gmail SMTP settings.
+4. Run `bundle install` and `bin/rails db:migrate`, then restart/redeploy.
+
+Sign-in requests are POST forms protected by Rails CSRF validation, and callbacks
+use OAuth state validation. Only identity scopes are requested; Google access
+tokens are not stored. Anyone who can complete Google sign-in may receive staff
+access, as with the requested default; there is no domain or invitation restriction.
+
 ## PWA updates
 
 Open pages check `/build` on load, every minute while visible, and when returning

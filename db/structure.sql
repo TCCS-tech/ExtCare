@@ -417,7 +417,8 @@ CREATE TABLE extcare.users (
     role extcare.role_enum DEFAULT 'User'::extcare.role_enum NOT NULL,
     password_digest character varying NOT NULL,
     created_at timestamp(6) with time zone NOT NULL,
-    updated_at timestamp(6) with time zone NOT NULL
+    updated_at timestamp(6) with time zone NOT NULL,
+    google_uid character varying
 );
 
 
@@ -771,6 +772,13 @@ CREATE UNIQUE INDEX index_users_on_email ON extcare.users USING btree (email);
 
 
 --
+-- Name: index_users_on_google_uid; Type: INDEX; Schema: extcare; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_google_uid ON extcare.users USING btree (google_uid);
+
+
+--
 -- Name: attendance attendance_enforce_visit_rules; Type: TRIGGER; Schema: extcare; Owner: -
 --
 
@@ -839,6 +847,7 @@ ALTER TABLE ONLY extcare.tasks
 SET search_path TO extcare;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261005000000'),
 ('20260929010000'),
 ('20260928020000'),
 ('20260928010000'),

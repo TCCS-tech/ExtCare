@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   root "home#show"
 
   resource :session
+  get "/api/auth/callback/google", to: "google_sessions#create"
+  get "/auth/failure", to: "google_sessions#failure"
   resources :passwords, param: :token
   resources :checkins, only: %i[ index create ]
   resources :checkouts, only: %i[ index create update destroy ]
