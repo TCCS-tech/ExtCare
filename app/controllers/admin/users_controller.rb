@@ -45,12 +45,11 @@ class Admin::UsersController < Admin::BaseController
 
   def update
     @user = User.find(params[:id])
-    if @user.update(password_params)
-      redirect_to admin_users_path, notice: "Password updated for #{@user.email}."
+    if @user.update(account_params)
+      redirect_to admin_users_path, notice: "Account updated for #{@user.email}."
     else
       @users = User.order(:email)
       @new_user = User.new
-      @user = User.find(params[:id])
       render :index, status: :unprocessable_entity
     end
   end
@@ -60,8 +59,8 @@ class Admin::UsersController < Admin::BaseController
       params.expect(user: [ :email, :password, :password_confirmation, :role ])
     end
 
-    def password_params
-      params.expect(user: [ :password, :password_confirmation ])
+    def account_params
+      params.expect(user: [ :password, :password_confirmation, :role ])
     end
 
     def invitation_params

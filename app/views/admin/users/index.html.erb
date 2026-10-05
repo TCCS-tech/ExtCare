@@ -1,5 +1,5 @@
 <% content_for :title, "Users" %>
-<%= render "shared/page_heading", title: "Users", description: "Add staff accounts and update account passwords.", eyebrow: "SCHOOL OFFICE" %>
+<%= render "shared/page_heading", title: "Users", description: "Add staff accounts and update roles and passwords.", eyebrow: "SCHOOL OFFICE" %>
 <p class="mb-3"><%= link_to "Admin home", admin_root_path %></p>
 
 <div class="card card-body shadow-sm mb-4">
@@ -66,6 +66,15 @@
       </div>
       <% if @user&.id == user.id && @user.errors.any? %>
         <div class="alert alert-danger"><%= @user.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <%= form_with model: user, url: admin_user_path(user), method: :patch do |form| %>
+        <div class="row g-3 align-items-end mb-3">
+          <div class="col-12 col-md-4">
+            <%= form.label :role, "Role", for: "user_#{user.id}_role", class: "form-label" %>
+            <%= form.select :role, [[ "Admin", "admin" ], [ "Staff", "user" ]], {}, id: "user_#{user.id}_role", class: "form-select" %>
+          </div>
+          <div class="col-12 col-md-4"><%= form.submit "Update role", class: "btn btn-outline-primary" %></div>
+        </div>
       <% end %>
       <%= form_with model: user, url: admin_user_path(user), method: :patch do |form| %>
         <div class="row g-3 align-items-end">
